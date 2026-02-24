@@ -7,7 +7,7 @@ This repository keeps the GUI code here and includes the Beckhoff ADS library as
 ## Clone
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/BrennoDom/ads-qt-linux.git
 cd ads-qt-gui
 git submodule update --init --recursive
 ```
