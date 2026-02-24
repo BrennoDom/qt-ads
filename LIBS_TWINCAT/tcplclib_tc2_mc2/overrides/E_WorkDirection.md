@@ -1,0 +1,11 @@
+# E_WorkDirection
+
+```
+TYPE E_WorkDirection :
+(
+    WORKDIRECTION_POSITIVE := 0,
+    WORKDIRECTION_NEGATIVE := 1,
+    WORKDIRECTION_BOTH := 2
+);
+END_TYPE
+```

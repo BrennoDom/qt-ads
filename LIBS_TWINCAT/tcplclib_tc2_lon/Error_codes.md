@@ -1,0 +1,300 @@
+# Error codes
+
+## Library
+tcplclib_tc2_lon
+
+## Category
+Motion Control
+
+# Error codes
+
+| **Value (hex)** | **Value (dec)** | **Value (enum)** | **Description** |
+| --- | --- | --- | --- |
+| 0x0000 | 0 | eLON\_no\_Error | No error is pending. |
+| 0x0001 | 1 | eLON\_Value\_out\_of\_range | The input variable "Value" is outside the permitted range. The value was not sent. "Value" can have different formats with corresponding prefix (e.g. LREAL = lrValue). |
+| 0x0002 | 2 | eLON\_Terminal\_not\_ready | The function block "FB\_LON\_KL6401" passes through an initialization step chain (query terminal type, query firmware etc.) when the PLC is started. This message is issued as along as the initialization is in progress. If an error is pending after a PLC reset, the controller should be de-energized once. |
+| 0x0003 | 3 | eLON\_Wrong\_SNVT\_Typ | The received SNVT type does not match the SNVT type of the addressed NV index (input variable "wId"). |
+| 0x0004 | 4 | eLON\_Wrong\_wNVIndex | Incorrect NV index. |
+| 0x0005 | 5 | eKL6401\_Wrong\_Terminal | No KL6401 was detected. |
+| 0x0006 | 6 | eKL6401\_Error | The function block "FB\_LON\_KL6401" has an error. The error code is shown at output "dwErrorKL". |
+| 0x0007 | 7 | eKL6401\_Terminal\_is\_not\_initialized | The terminal is not initialized. This message usually means that there is no connection to the terminal. Terminal linked to the variables in the System Manager? Terminal plugged in incorrectly? Everything corrected, everything translated and re-read into the System Manager? |
+| 0x0032 | 50 | eLON\_L\_star\_Out\_of\_range | SNVT 70 / The input variable "stValue.L\_star" is outside the permitted range. The value was not sent. |
+| 0x0033 | 51 | eLON\_A\_star\_Out\_of\_range | SNVT 70 / The input variable "stValue.A\_star" is outside the permitted range. The value was not sent. |
+| 0x0034 | 52 | eLON\_B\_star\_Out\_of\_range | SNVT 70 / The input variable "stValue.B\_star" is outside the permitted range. The value was not sent. |
+| 0x0037 | 55 | eLON\_eRequest\_Out\_of\_range | SNVT 73 / The input variable "stValue.eRequest" is outside the permitted range. The value was not sent. |
+| 0x0042 | 66 | eLON\_wYear\_Out\_of\_range | SNVT 084 / 088 / The input variable "stValue.wYear" is outside the permitted range. The value was not sent. |
+| 0x0043 | 67 | eLON\_wMonth\_Out\_of\_range | SNVT 084 / 088 / The input variable "stValue.wMonth" is outside the permitted range. The value was not sent. |
+| 0x0044 | 68 | eLON\_wDay\_Out\_of\_range | eLON\_wDay\_Out\_of\_range: SNVT 084 / 088 / The input variable "stValue.wDay" is outside the permitted range. The value was not sent. |
+| 0x0045 | 69 | eLON\_wHour\_Out\_of\_range | SNVT 084 / 088 / The input variable "stValue.wHour" is outside the permitted range. The value was not sent. |
+| 0x0046 | 70 | eLON\_wMinute\_Out\_of\_range | SNVT 084 / 088 / The input variable "stValue.wMinute" is outside the permitted range. The value was not sent. |
+| 0x0047 | 71 | eLON\_wSecond\_Out\_of\_range | SNVT 084 / 088 / The input variable "stValue.wSecond" is outside the permitted range. The value was not sent. |
+| 0x0048 | 72 | eLON\_wMillisecond\_Out\_of\_range | SNVT 73 / The input variable "stValue.wMillisecond" is outside the permitted range. The value was not sent. |
+| 0x0050 | 80 | eLON\_rZero\_Out\_of\_range | SNVT 085 / The input variable "stValue.rZero" is outside the permitted range. The value was not sent. |
+| 0x0051 | 81 | eLON\_rSpan\_Out\_of\_range | SNVT 085 / The input variable "stValue.rSpan" is outside the permitted range. The value was not sent. |
+| 0x0055 | 85 | eLON\_arrValue01\_Out\_of\_range | SNVT 086 / The input variable "arrValue[1]" is outside the permitted range. The value was not sent. |
+| 0x0056 | 86 | eLON\_arrValue02\_Out\_of\_range | SNVT 086 / The input variable "arrValue[2]" is outside the permitted range. The value was not sent. |
+| 0x0057 | 87 | eLON\_arrValue03\_Out\_of\_range | SNVT 086 / The input variable "arrValue[3]" is outside the permitted range. The value was not sent. |
+| 0x0058 | 88 | eLON\_arrValue04\_Out\_of\_range | SNVT 086 / The input variable "arrValue[4]" is outside the permitted range. The value was not sent. |
+| 0x0059 | 89 | eLON\_arrValue05\_Out\_of\_range | SNVT 086 / The input variable "arrValue[5]" is outside the permitted range. The value was not sent. |
+| 0x005A | 90 | eLON\_arrValue06\_Out\_of\_range | SNVT 086 / The input variable "arrValue[6]" is outside the permitted range. The value was not sent. |
+| 0x005B | 91 | eLON\_arrValue07\_Out\_of\_range | SNVT 086 / The input variable "arrValue[7]" is outside the permitted range. The value was not sent. |
+| 0x005C | 92 | eLON\_arrValue08\_Out\_of\_range | SNVT 086 / The input variable "arrValue[8]" is outside the permitted range. The value was not sent. |
+| 0x005D | 93 | eLON\_arrValue09\_Out\_of\_range | SNVT 086 / The input variable "arrValue[9]" is outside the permitted range. The value was not sent. |
+| 0x0064 | 100 | eLON\_arrValue10\_Out\_of\_range | SNVT 086 / The input variable "arrValue[10]" is outside the permitted range. The value was not sent. |
+| 0x0065 | 101 | eLON\_arrValue11\_Out\_of\_range | SNVT 086 / The input variable "arrValue[11]" is outside the permitted range. The value was not sent. |
+| 0x0066 | 102 | eLON\_arrValue12\_Out\_of\_range | SNVT 086 / The input variable "arrValue[12]" is outside the permitted range. The value was not sent. |
+| 0x0067 | 103 | eLON\_arrValue13\_Out\_of\_range | SNVT 086 / The input variable "arrValue[13]" is outside the permitted range. The value was not sent. |
+| 0x0068 | 104 | eLON\_arrValue14\_Out\_of\_range | SNVT 086 / The input variable "arrValue[14]" is outside the permitted range. The value was not sent. |
+| 0x0069 | 105 | eLON\_arrValue15\_Out\_of\_range | SNVT 086 / The input variable "arrValue[15]" is outside the permitted range. The value was not sent. |
+| 0x006A | 106 | eLON\_arrValue16\_Out\_of\_range | SNVT 086 / The input variable "arrValue[16]" is outside the permitted range. The value was not sent. |
+| 0x006B | 107 | eLON\_arrValue17\_Out\_of\_range | SNVT 086 / The input variable "arrValue[17]" is outside the permitted range. The value was not sent. |
+| 0x006C | 108 | eLON\_arrValue18\_Out\_of\_range | SNVT 086 / The input variable "arrValue[18]" is outside the permitted range. The value was not sent. |
+| 0x006D | 109 | eLON\_arrValue19\_Out\_of\_range | SNVT 086 / The input variable "arrValue[19]" is outside the permitted range. The value was not sent. |
+| 0x0073 | 115 | eLON\_arrValue20\_Out\_of\_range | SNVT 086 / The input variable "arrValue[20]" is outside the permitted range. The value was not sent. |
+| 0x0074 | 116 | eLON\_arrValue21\_Out\_of\_range | SNVT 086 / The input variable "arrValue[21]" is outside the permitted range. The value was not sent. |
+| 0x0075 | 117 | eLON\_arrValue22\_Out\_of\_range | SNVT 086 / The input variable "arrValue[22]" is outside the permitted range. The value was not sent. |
+| 0x0076 | 118 | eLON\_arrValue23\_Out\_of\_range | SNVT 086 / The input variable "arrValue[23]" is outside the permitted range. The value was not sent. |
+| 0x0077 | 119 | eLON\_arrValue24\_Out\_of\_range | SNVT 086 / The input variable "arrValue[24]" is outside the permitted range. The value was not sent. |
+| 0x0078 | 120 | eLON\_arrValue25\_Out\_of\_range | SNVT 086 / The input variable "arrValue[25]" is outside the permitted range. The value was not sent. |
+| 0x0079 | 121 | eLON\_arrValue26\_Out\_of\_range | SNVT 086 / The input variable "arrValue[26]" is outside the permitted range. The value was not sent. |
+| 0x007A | 122 | eLON\_arrValue27\_Out\_of\_range | SNVT 086 / The input variable "arrValue[27]" is outside the permitted range. The value was not sent. |
+| 0x007B | 123 | eLON\_arrValue28\_Out\_of\_range | SNVT 086 / The input variable "arrValue[28]" is outside the permitted range. The value was not sent. |
+| 0x007C | 124 | eLON\_arrValue29\_Out\_of\_range | SNVT 086 / The input variable "arrValue[29]" is outside the permitted range. The value was not sent. |
+| 0x0082 | 130 | eLON\_arrValue30\_Out\_of\_range | SNVT 086 / The input variable "arrValue[30]" is outside the permitted range. The value was not sent. |
+| 0x0083 | 131 | eLON\_arrValue31\_Out\_of\_range | SNVT 086 / The input variable "arrValue[31]" is outside the permitted range. The value was not sent. |
+| 0x0084 | 132 | eLON\_arrValue32\_Out\_of\_range | SNVT 086 / The input variable "arrValue[32]" is outside the permitted range. The value was not sent. |
+| 0x0085 | 133 | eLON\_arrValue33\_Out\_of\_range | SNVT 086 / The input variable "arrValue[33]" is outside the permitted range. The value was not sent. |
+| 0x0086 | 134 | eLON\_arrValue34\_Out\_of\_range | SNVT 086 / The input variable "arrValue[34]" is outside the permitted range. The value was not sent. |
+| 0x0087 | 135 | eLON\_arrValue35\_Out\_of\_range | SNVT 086 / The input variable "arrValue[35]" is outside the permitted range. The value was not sent. |
+| 0x0088 | 136 | eLON\_arrValue36\_Out\_of\_range | SNVT 086 / The input variable "arrValue[36]" is outside the permitted range. The value was not sent. |
+| 0x0089 | 137 | eLON\_arrValue37\_Out\_of\_range | SNVT 086 / The input variable "arrValue[37]" is outside the permitted range. The value was not sent. |
+| 0x008A | 138 | eLON\_arrValue38\_Out\_of\_range | SNVT 086 / The input variable "arrValue[38]" is outside the permitted range. The value was not sent. |
+| 0x008B | 139 | eLON\_arrValue39\_Out\_of\_range | SNVT 086 / The input variable "arrValue[39]" is outside the permitted range. The value was not sent. |
+| 0x008C | 140 | eLON\_arrValue40\_Out\_of\_range | SNVT 086 / The input variable "arrValue[40]" is outside the permitted range. The value was not sent. |
+| 0x0091 | 145 | eLON\_087uiDay\_Out\_of\_range | SNVT 087 / The input variable "stValue.uiDay" is outside the permitted range. The value was not sent. |
+| 0x0092 | 146 | eLON\_087uiHour\_Out\_of\_range | SNVT 087 / The input variable "stValue.uiHour" is outside the permitted range. The value was not sent. |
+| 0x0093 | 147 | eLON\_087uiMinute\_Out\_of\_range | SNVT 087 / The input variable "stValue.uiMinute" is outside the permitted range. The value was not sent. |
+| 0x0094 | 148 | eLON\_087uiSecond\_Out\_of\_range | SNVT 087 / The input variable "stValue.uiSecond" is outside the permitted range. The value was not sent. |
+| 0x0095 | 149 | eLON\_087uiMillisecond\_Out\_of\_range | SNVT 087 / The input variable "stValue.uiMillisecond" is outside the permitted range. The value was not sent. |
+| 0x009B | 155 | eLON\_ePriorty\_level\_Out\_of\_range | SNVT 088 / The input variable "stValue.ePriorty\_level" is outside the permitted range. The value was not sent. |
+| 0x009C | 156 | eLON\_eAlarm\_type\_Out\_of\_range | SNVT 088 / The input variable "stValue.eAlarm\_type" is outside the permitted range. The value was not sent. |
+| 0x00A0 | 160 | eLON\_Currency\_Out\_of\_range | SNVT 089 / The input variable "stValue.Currency" is outside the permitted range. The value was not sent. |
+| 0x00A5 | 165 | eLON\_diRw\_ptr\_Out\_of\_range | SNVT 090 / The input variable "stValue.diRw\_ptr" is outside the permitted range. The value was not sent. |
+| 0x00AA | 170 | eLON\_Object\_request\_Out\_of\_range | SNVT 092 / The input variable "stValue.Object\_request" is outside the permitted range. The value was not sent. |
+| 0x00AF | 175 | eLON\_094eLearn\_Out\_of\_range | SNVT 094 / The input variable "stValue.eLearn" is outside the permitted range. The value was not sent. |
+| 0x00B0 | 176 | eLON\_094uiHour\_Out\_of\_range | SNVT 094 / The input variable "stValue.uiHour" is outside the permitted range. The value was not sent. |
+| 0x00B1 | 177 | eLON\_094uiMinute\_Out\_of\_range | SNVT 094 / The input variable "stValue.uiMinute" is outside the permitted range. The value was not sent. |
+| 0x00B2 | 178 | eLON\_094uiSecond\_Out\_of\_range | SNVT 094 / The input variable "stValue.uiSecond" is outside the permitted range. The value was not sent. |
+| 0x00B3 | 179 | eLON\_094uiMillisecond\_Out\_of\_range | SNVT 094 / The input variable "stValue.uiMillisecond" is outside the permitted range. The value was not sent. |
+| 0x00B9 | 185 | eLON\_095rValue\_Out\_of\_range | SNVT 095 / The input variable "stValue.rValue" is outside the permitted range. The value was not sent. |
+| 0x00BA | 186 | eLON\_095siState\_Out\_of\_range | SNVT 095 / The input variable "stValue.siState" is outside the permitted range. The value was not sent. |
+| 0x00BE | 190 | eLON\_byInterp\_pts\_0\_to\_1\_Out\_of\_range | SNVT 096 / The input variable "stValue.byInterp\_pts\_0\_to\_1" is outside the permitted range. The value was not sent. |
+| 0x00BF | 191 | eLON\_byInterp\_pts\_1\_to\_2\_Out\_of\_range | SNVT 096 / The input variable "stValue.byInterp\_pts\_1\_to\_2" is outside the permitted range. The value was not sent. |
+| 0x00C0 | 192 | eLON\_byInterp\_pts\_2\_to\_3\_Out\_of\_range | SNVT 096 / The input variable "stValue.byInterp\_pts\_2\_to\_3" is outside the permitted range. The value was not sent. |
+| 0x00C1 | 193 | eLON\_byInterp\_pts\_3\_to\_4\_Out\_of\_range | SNVT 096 / The input variable "stValue.byInterp\_pts\_3\_to\_4" is outside the permitted range. The value was not sent. |
+| 0x00C2 | 194 | eLON\_byInterp\_pts\_4\_to\_5\_Out\_of\_range | SNVT 096 / The input variable "stValue.byInterp\_pts\_4\_to\_5" is outside the permitted range. The value was not sent. |
+| 0x00C3 | 195 | eLON\_byInterp\_pts\_5\_to\_6\_Out\_of\_range | SNVT 096 / The input variable "stValue.byInterp\_pts\_5\_to\_6" is outside the permitted range. The value was not sent. |
+| 0x00C4 | 196 | eLON\_byInterp\_pts\_6\_to\_0\_Out\_of\_range | SNVT 096 / The input variable "stValue.byInterp\_pts\_6\_to\_0" is outside the permitted range. The value was not sent. |
+| 0x00C8 | 200 | eLON\_rOccupied\_cool\_Out\_of\_range | SNVT 106 / The input variable "stValue.rOccupied\_cool" is outside the permitted range. The value was not sent. |
+| 0x00C9 | 201 | eLON\_rStandby\_cool\_Out\_of\_range | SNVT 106 / The input variable "stValue.rStandby\_cool" is outside the permitted range. The value was not sent. |
+| 0x00CA | 202 | eLON\_rUnoccupied\_cool\_Out\_of\_range | SNVT 106 / The input variable "stValue.rUnoccupied\_cool" is outside the permitted range. The value was not sent. |
+| 0x00CB | 203 | eLON\_rOccupied\_heat\_Out\_of\_range | SNVT 106 / The input variable "stValue.rOccupied\_heat" is outside the permitted range. The value was not sent. |
+| 0x00CC | 204 | eLON\_rStandby\_heat\_Out\_of\_range | SNVT 106 / The input variable "stValue.rStandby\_heat" is outside the permitted range. The value was not sent. |
+| 0x00CD | 205 | eLON\_rUnoccupied\_heat\_Out\_of\_range | SNVT 106 / The input variable "stValue.rUnoccupied\_heat" is outside the permitted range. The value was not sent. |
+| 0x00D2 | 210 | eLON\_111rPercent\_Out\_of\_range | SNVT 111 / The input variable "stValue.rPercent" is outside the permitted range. The value was not sent. |
+| 0x00D3 | 211 | eLON\_111eState\_Out\_of\_range | SNVT 111 / The input variable "stValue.eState" is outside the permitted range. The value was not sent. |
+| 0x00D7 | 215 | eLON\_eMode\_Out\_of\_range | SNVT 112 / The input variable "stValue.eMode" is outside the permitted range. The value was not sent. |
+| 0x00D8 | 216 | eLON\_rHeat\_output\_primary\_Out\_of\_range | SNVT 112 / The input variable "stValue.rHeat\_output\_primary" is outside the permitted range. The value was not sent. |
+| 0x00D9 | 217 | eLON\_rHeat\_output\_secondary\_Out\_of\_range | SNVT 112 / The input variable "stValue.rHeat\_output\_secondary" is outside the permitted range. The value was not sent. |
+| 0x00DA | 218 | eLON\_rCool\_output\_Out\_of\_range | SNVT 112 / The input variable "stValue.rCool\_output" is outside the permitted range. The value was not sent. |
+| 0x00DB | 219 | eLON\_rEcon\_output\_Out\_of\_range | SNVT 112 / The input variable "stValue.rEcon\_output" is outside the permitted range. The value was not sent. |
+| 0x00DC | 220 | eLON\_rFan\_output\_Out\_of\_range | SNVT 112 / The input variable "stValue.rFan\_output" is outside the permitted range. The value was not sent. |
+| 0x00E1 | 225 | eLON\_115eFunction\_Out\_of\_range | SNVT 115 / The input variable "stValue.eFunction" is outside the permitted range. The value was not sent. |
+| 0x00E2 | 226 | eLON\_eFunction\_Out\_of\_range | SNVT 116 / 117 / The input variable "stValue.eFunction" is outside the permitted range. The value was not sent. |
+| 0x00E3 | 227 | eLON\_rSetting\_Out\_of\_range | SNVT 116 / 117 / The input variable "stValue.rSetting" is outside the permitted range. The value was not sent. |
+| 0x00E4 | 228 | eLON\_rRotation\_Out\_of\_range | SNVT 116 / 117 / The input variable "stValue.rRotation" is outside the permitted range. The value was not sent. |
+| 0x00E5 | 229 | eLON\_rFade\_time\_Out\_of\_range | SNVT 116 / The input variable "stValue.rFade\_time" is outside the permitted range. The value was not sent. |
+| 0x00E6 | 230 | eLON\_rDelay\_time\_Out\_of\_range | SNVT 116 / The input variable "stValue.rDelay\_time" is outside the permitted range. The value was not sent. |
+| 0x00EB | 235 | eLON\_eChlr\_run\_mode\_Out\_of\_range | SNVT 127 / The input variable "stValue.eChlr\_run\_mode" is outside the permitted range. The value was not sent. |
+| 0x00EC | 236 | eLON\_echlr\_op\_mode\_Out\_of\_range | SNVT 127 / The input variable "stValue.echlr\_op\_mode" is outside the permitted range. The value was not sent. |
+| 0x00F0 | 240 | eLON\_eNext\_state\_Out\_of\_range | SNVT 128 / The input variable "stValue.eNext\_state" is outside the permitted range. The value was not sent. |
+| 0x00F1 | 241 | eLON\_eCurrent\_state\_Out\_of\_range | SNVT 128 / The input variable "stValue.eCurrent\_state" is outside the permitted range. The value was not sent. |
+| 0x00F5 | 245 | eLON\_diSecond\_time\_offset\_Out\_of\_range | SNVT 134 / The input variable "stValue.diSecond\_time\_offset" is outside the permitted range. The value was not sent. |
+| 0x00F6 | 246 | eLON\_eType\_of\_description\_Out\_of\_range | SNVT 134 / The input variable "stValue.eType\_of\_description" is outside the permitted range. The value was not sent. |
+| 0x00FA | 250 | eLON\_byHour\_of\_start\_DST\_Out\_of\_range | SNVT 134 / The input variable "stValue.byHour\_of\_start\_DST" is outside the permitted range. The value was not sent. |
+| 0x00FB | 251 | eLON\_byMinute\_of\_start\_DST\_Out\_of\_range | SNVT 134 / The input variable "stValue.byMinute\_of\_start\_DST" is outside the permitted range. The value was not sent. |
+| 0x00FC | 252 | eLON\_bySecond\_of\_start\_DST\_Out\_of\_range | SNVT 134 / The input variable "stValue.bySecond\_of\_start\_DST" is outside the permitted range. The value was not sent. |
+| 0x0104 | 260 | eLON\_byHour\_of\_end\_DST\_Out\_of\_range | SNVT 134 / The input variable "stValue.byHour\_of\_end\_DST" is outside the permitted range. The value was not sent. |
+| 0x0105 | 261 | eLON\_byMinute\_of\_end\_DST\_Out\_of\_range | SNVT 134 / The input variable "stValue.byMinute\_of\_end\_DST" is outside the permitted range. The value was not sent. |
+| 0x0106 | 262 | eLON\_bySecond\_of\_end\_DST\_Out\_of\_range | SNVT 134 / The input variable "stValue.bySecond\_of\_end\_DST" is outside the permitted range. The value was not sent. |
+| 0x0107 | 263 | eLON\_stStart\_DST\_uiG\_day\_of\_start\_DST\_Out\_of\_range | SNVT 134 / The input variable "stValue.stStart\_DST.uiG\_day\_of\_start\_DST" is outside the permitted range. The value was not sent. |
+| 0x0108 | 264 | eLON\_stStart\_DST\_uiJ\_day\_of\_start\_DST\_Out\_of\_range | SNVT 134 / The input variable "stValue.stStart\_DST.uiJ\_day\_of\_start\_DST" is outside the permitted range. The value was not sent. |
+| 0x0109 | 265 | eLON\_stStart\_DST\_stM\_start\_DST\_byMonth\_of\_start\_DST\_Out\_of\_range | SNVT 134 / The input variable "stValue.stStart\_DST.stM\_start\_DST.byMonth\_of\_start\_DST" is outside the permitted range. The value was not sent. |
+| 0x010A | 266 | eLON\_stStart\_DST\_stM\_start\_DST\_byWeek\_of\_start\_DST\_Out\_of\_range | SNVT 134 / The input variable "stValue.stStart\_DST.stM\_start\_DST.byWeek\_of\_start\_DST" is outside the permitted range. The value was not sent. |
+| 0x010B | 267 | eLON\_stStart\_DST\_stM\_start\_DST\_eDateday\_of\_start\_DST\_Out\_of\_range | SNVT 134 / The input variable "stValue.stStart\_DST.stM\_start\_DST.eDateday\_of\_start\_DST" is outside the permitted range. The value was not sent. |
+| 0x010C | 268 | eLON\_stEnd\_DST\_uiG\_day\_of\_end\_DST\_Out\_of\_range | SNVT 134 / The input variable "stValue.stEnd\_DST.uiG\_day\_of\_end\_DST" is outside the permitted range. The value was not sent. |
+| 0x010D | 269 | eLON\_stEnd\_DST\_uiJ\_day\_of\_end\_DST\_Out\_of\_range | SNVT 134 / The input variable "stValue.stEnd\_DST.uiJ\_day\_of\_end\_DST" is outside the permitted range. The value was not sent. |
+| 0x010E | 270 | eLON\_stEnd\_DST\_stM\_end\_DST\_byMonth\_of\_end\_DST\_Out\_of\_range | SNVT 134 / The input variable "stValue.stEnd\_DST.stM\_end\_DST.byMonth\_of\_end\_DST" is outside the permitted range. The value was not sent. |
+| 0x010F | 271 | eLON\_stEnd\_DST\_stM\_end\_DST\_byWeek\_of\_end\_DST\_Out\_of\_range | SNVT 134 / The input variable "stValue.stEnd\_DST.stM\_end\_DST.byWeek\_of\_end\_DST" is outside the permitted range. The value was not sent. |
+| 0x0110 | 272 | eLON\_stEnd\_DST\_stM\_end\_DST\_eDateday\_of\_end\_DST\_Out\_of\_range | SNVT 134 / The input variable "stValue.stEnd\_DST.stM\_end\_DST.eDateday\_of\_end\_DST" is outside the permitted range. The value was not sent. |
+| 0x0118 | 280 | eLON\_byLatitude\_deg\_Out\_of\_range | SNVT 135 / The input variable "stValue.byLatitude" is outside the permitted range. The value was not sent. |
+| 0x0119 | 281 | eLON\_rLatitude\_min\_Out\_of\_range | SNVT 135 / The input variable "stValue.rLatitude" is outside the permitted range. The value was not sent. |
+| 0x011A | 282 | eLON\_bylongitude\_deg\_Out\_of\_range | SNVT 135 / The input variable "stValue.bylongitude\_deg" is outside the permitted range. The value was not sent. |
+| 0x011B | 283 | eLON\_rLongitude\_min\_Out\_of\_range | SNVT 135 / The input variable "stValue.rLongitude\_min" is outside the permitted range. The value was not sent. |
+| 0x0122 | 290 | eLON\_byNr\_decimals\_Out\_of\_range | SNVT 136 / The input variable "stValue.byNr\_decimals" is outside the permitted range. The value was not sent. |
+| 0x0123 | 291 | eLON\_eUnit\_Out\_of\_range | SNVT 136 / The input variable "stValue.eUnit" is outside the permitted range. The value was not sent. |
+| 0x0127 | 295 | eLON\_137eUnit\_Out\_of\_range | SNVT 137 / The input variable "stValue.eUnit" is outside the permitted range. The value was not sent. |
+| 0x0128 | 296 | eLON\_137byNr\_decimals\_Out\_of\_range | SNVT 137 / The input variable "stValue.byNr\_decimals" is outside the permitted range. The value was not sent. |
+| 0x0129 | 297 | eLON\_137byStatus\_Out\_of\_range | SNVT 137 / The input variable "stValue.byStatus" is outside the permitted range. The value was not sent. |
+| 0x012A | 298 | eLON\_137uiYear\_Out\_of\_range | SNVT 137 / The input variable "stValue.uiYear" is outside the permitted range. The value was not sent. |
+| 0x012B | 299 | eLON\_137uiMonth\_Out\_of\_range | SNVT 137 / The input variable "stValue.uiMonth" is outside the permitted range. The value was not sent. |
+| 0x012C | 300 | eLON\_137uiDay\_Out\_of\_range | SNVT 137 / The input variable "stValue.uiDay" is outside the permitted range. The value was not sent. |
+| 0x012D | 301 | eLON\_137uiHour\_Out\_of\_range | SNVT 137 / The input variable "stValue.uiHour" is outside the permitted range. The value was not sent. |
+| 0x012E | 302 | eLON\_137uiMinute\_Out\_of\_range | SNVT 137 / The input variable "stValue.uiMinute" is outside the permitted range. The value was not sent. |
+| 0x012F | 303 | eLON\_137uiSecond\_Out\_of\_range | SNVT 137 / The input variable "stValue.uiSecond" is outside the permitted range. The value was not sent. |
+| 0x0136 | 310 | eLON\_bySender\_prio\_Out\_of\_range | SNVT 148 / The input variable "stValue.bySender\_prio" is outside the permitted range. The value was not sent. |
+| 0x013B | 315 | eLON\_eStatus\_Out\_of\_range | SNVT 149 / The input variable "stValue.eStatus" is outside the permitted range. The value was not sent. |
+| 0x013C | 316 | eLON\_stSender\_uiID\_Out\_of\_range | SNVT 149 / The input variable "stValue.stSender.uiID" is outside the permitted range. The value was not sent. |
+| 0x013D | 317 | eLON\_stSender\_stRange\_uiLower\_Out\_of\_range | SNVT 149 / The input variable "stValue.stSender.stRange.uiLower" is outside the permitted range. The value was not sent. |
+| 0x013E | 318 | eLON\_stSender\_stRange\_uiUpper\_Out\_of\_range | SNVT 149 / The input variable "stValue.stSender.stRange.uiUpper" is outside the permitted range. The value was not sent. |
+| 0x013F | 319 | eLON\_uiController\_id\_Out\_of\_range | SNVT 149 / The input variable "stValue.uiController" is outside the permitted range. The value was not sent. |
+| 0x0145 | 325 | eLON\_ePan\_dir\_Out\_of\_range | SNVT 150 / The input variable "stValue." is outside the permitted range. The value was not sent. |
+| 0x0146 | 326 | eLON\_rPan\_speed\_Out\_of\_range | SNVT 150 / The input variable "stValue." is outside the permitted range. The value was not sent. |
+| 0x0147 | 327 | eLON\_eTilt\_dir\_Out\_of\_range | SNVT 150 / The input variable "stValue." is outside the permitted range. The value was not sent. |
+| 0x0148 | 328 | eLON\_rTilt\_speed\_Out\_of\_range | SNVT 150 / The input variable "stValue." is outside the permitted range. The value was not sent. |
+| 0x0149 | 329 | eLON\_eZoom\_Out\_of\_range | SNVT 150 / The input variable "stValue." is outside the permitted range. The value was not sent. |
+| 0x014A | 330 | eLON\_rZoom\_speed\_Out\_of\_range | SNVT 150 / The input variable "stValue." is outside the permitted range. The value was not sent. |
+| 0x014F | 335 | eLON\_eAction\_Out\_of\_range | SNVT 151 / The input variable "stValue.eAction" is outside the permitted range. The value was not sent. |
+| 0x0154 | 340 | eLON\_byController\_prio\_Out\_of\_range | SNVT 152 / The input variable "stValue.byController" is outside the permitted range. The value was not sent. |
+| 0x0155 | 341 | eLON\_152eFunction\_Out\_of\_range | SNVT 152 / The input variable "stValue.eFunction" is outside the permitted range. The value was not sent. |
+| 0x0156 | 342 | eLON\_152eAction\_Out\_of\_range | SNVT 152 / The input variable "stValue.eAction" is outside the permitted range. The value was not sent. |
+| 0x0157 | 343 | eLON\_stValue\_stAbspos\_rZoom\_Out\_of\_range | SNVT 152 / The input variable "stValue.stValue.stAbspos.rZoom" is outside the permitted range. The value was not sent. |
+| 0x0158 | 344 | eLON\_stValue\_stAbspos\_rTilt\_Out\_of\_range | SNVT 152 / The input variable "stValue.stValue.stAbspos.rTilt" is outside the permitted range. The value was not sent. |
+| 0x0159 | 345 | eLON\_stValue\_stAbspos\_rPan\_Out\_of\_range | SNVT 152 / The input variable "stValue.stValue.stAbspos.rPan" is outside the permitted range. The value was not sent. |
+| 0x015E | 350 | eLON\_eMain\_pump\_Out\_of\_range | SNVT 156 / The input variable "stValue.eMain\_pump" is outside the permitted range. The value was not sent. |
+| 0x015F | 351 | eLON\_eBooster\_pump\_Out\_of\_range | SNVT 156 / The input variable "stValue.eBooster\_pump" is outside the permitted range. The value was not sent. |
+| 0x0160 | 352 | eLON\_ePriority\_level\_Out\_of\_range | SNVT 156 / The input variable "stValue.ePriority\_level" is outside the permitted range. The value was not sent. |
+| 0x0161 | 353 | eLON\_eProcess\_ready\_Out\_of\_range | SNVT 156 / The input variable "stValue.eProcess\_ready" is outside the permitted range. The value was not sent. |
+| 0x0162 | 354 | eLON\_eEmergency\_stop\_activated\_Out\_of\_range | SNVT 156 / The input variable "stValue.eEmergency\_stop\_activated" is outside the permitted range. The value was not sent. |
+| 0x0163 | 355 | eLON\_eMain\_pump\_drive\_enabled\_Out\_of\_range | SNVT 156 / The input variable "stValue.eMain\_pump\_drive\_enabled" is outside the permitted range. The value was not sent. |
+| 0x0164 | 356 | eLON\_eBooster\_pump\_drive\_enabled\_Out\_of\_range | SNVT 156 / The input variable "stValue.eBooster\_pump\_drive\_enabled" is outside the permitted range. The value was not sent. |
+| 0x0165 | 357 | eLON\_eMaintenance\_required\_Out\_of\_range | SNVT 156 / The input variable "stValue.eMaintenance\_required" is outside the permitted range. The value was not sent. |
+| 0x016D | 365 | eLON\_eControl\_status\_Out\_of\_range | SNVT 157 / The input variable "stValue.eControl\_status" is outside the permitted range. The value was not sent. |
+| 0x016E | 366 | eLON\_stControl\_device\_addr\_byDomain\_length\_Out\_of\_range | SNVT 157 / The input variable "stValue.stControl\_device\_addr.byDomain\_length" is outside the permitted range. The value was not sent. |
+| 0x016F | 367 | eLON\_stControl\_device\_addr\_bySubnet\_Out\_of\_range | SNVT 157 / The input variable "stValue.stControl\_device\_addr.bySubnet" is outside the permitted range. The value was not sent. |
+| 0x0170 | 368 | eLON\_stControl\_device\_addr\_byNode\_Out\_of\_range | SNVT 157 / The input variable "stValue.stControl\_device\_addr.byNode" is outside the permitted range. The value was not sent. |
+| 0x0177 | 375 | eLON\_rExhaust\_temperature\_Out\_of\_range | SNVT 158 / The input variable "stValue.rExhaust\_temperature" is outside the permitted range. The value was not sent. |
+| 0x0178 | 376 | eLON\_rExhaust\_pressure\_Out\_of\_range | SNVT 158 / The input variable "stValue.rExhaust\_pressure" is outside the permitted range. The value was not sent. |
+| 0x0179 | 377 | eLON\_rShaft\_seal\_purge\_pressure\_Out\_of\_range | SNVT 158 / The input variable "stValue.rShaft\_seal\_purge\_pressure" is outside the permitted range. The value was not sent. |
+| 0x017A | 378 | eLON\_rSupply\_voltage\_Out\_of\_range | SNVT 158 / The input variable "stValue.rSupply\_voltage" is outside the permitted range. The value was not sent. |
+| 0x017B | 379 | eLON\_eCoolant\_flow\_low\_Out\_of\_range | SNVT 158 / The input variable "stValue.eCoolant\_flow\_low" is outside the permitted range. The value was not sent. |
+| 0x017C | 380 | eLON\_eDilution\_active\_Out\_of\_range | SNVT 158 / The input variable "stValue.eDilution\_active" is outside the permitted range. The value was not sent. |
+| 0x017D | 381 | eLON\_eBallast\_dilution\_active\_Out\_of\_range | SNVT 158 / The input variable "stValue.eBallast\_dilution\_active" is outside the permitted range. The value was not sent. |
+| 0x017E | 382 | eLON\_eInlet\_purge\_dilution\_active\_Out\_of\_range | SNVT 158 / The input variable "stValue.eInlet\_purge\_dilution\_active" is outside the permitted range. The value was not sent. |
+| 0x017F | 383 | eLON\_eExhaust\_dilution\_active\_Out\_of\_range | SNVT 158 / The input variable "stValue.eExhaust\_dilution\_active" is outside the permitted range. The value was not sent. |
+| 0x0180 | 384 | eLON\_eDilution\_flow\_Out\_of\_range | SNVT 158 / The input variable "stValue.eDilution\_flow" is outside the permitted range. The value was not sent. |
+| 0x0181 | 385 | eLON\_ePower\_supply\_on\_Out\_of\_range | SNVT 158 / The input variable "stValue.ePower\_supply\_on" is outside the permitted range. The value was not sent. |
+| 0x0186 | 390 | eLON\_rRotational\_speed\_Out\_of\_range | SNVT 159 / The input variable "stValue.rRotational\_speed" is outside the permitted range. The value was not sent. |
+| 0x0187 | 391 | eLON\_rBody\_temperature\_Out\_of\_range | SNVT 159 / The input variable "stValue.rBody" is outside the permitted range. The value was not sent. |
+| 0x0188 | 392 | eLON\_rMotor\_external\_temperature\_Out\_of\_range | SNVT 159 / The input variable "stValue.rMotor\_external\_temperature" is outside the permitted range. The value was not sent. |
+| 0x0189 | 393 | eLON\_rMotor\_external\_temperature\_Out\_of\_range | SNVT 159 / The input variable "stValue.eMotor\_overloaded" is outside the permitted range. The value was not sent. |
+| 0x018A | 394 | eLON\_eMotor\_overloaded\_Out\_of\_range | SNVT 159 / The input variable "stValue." is outside the permitted range. The value was not sent. |
+| 0x018B | 395 | eLON\_eOil\_level\_low\_Out\_of\_range | SNVT 159 / The input variable "stValue.ePhase\_imbalance\_detected" is outside the permitted range. The value was not sent. |
+| 0x018C | 396 | eLON\_ePhase\_imbalance\_detected\_Out\_of\_range | SNVT 159 / The input variable "stValue." is outside the permitted range. The value was not sent. |
+| 0x018D | 397 | eLON\_rCurrent\_usage\_Out\_of\_range | SNVT 159 / The input variable "stValue.rCurrent\_usage" is outside the permitted range. The value was not sent. |
+| 0x018E | 398 | eLON\_rPower\_usage\_Out\_of\_range | SNVT 159 / The input variable "stValue.Power\_usage" is outside the permitted range. The value was not sent. |
+| 0x018F | 399 | eLON\_eTemperature\_control\_Out\_of\_range | SNVT 159 / The input variable "stValue.eElectromagnetic\_brake\_active" is outside the permitted range. The value was not sent. |
+| 0x0190 | 400 | eLON\_eElectromagnetic\_brake\_active\_Out\_of\_range | SNVT 159 / The input variable "stValue." is outside the permitted range. The value was not sent. |
+| 0x0191 | 401 | eLON\_eFriction\_brake\_active\_Out\_of\_range | SNVT 159 / The input variable "stValue.eFriction\_brake\_active" is outside the permitted range. The value was not sent. |
+| 0x0192 | 402 | eLON\_eGas\_brake\_active\_Out\_of\_range | SNVT 159 / The input variable "stValue.eGas\_brake\_active" is outside the permitted range. The value was not sent. |
+| 0x019A | 410 | eLON\_164iMilliseconds\_Out\_of\_range | SNVT 164 / The input variable "stValue.iMilliseconds" is outside the permitted range. The value was not sent. |
+| 0x019B | 411 | eLON\_164ePriority\_level\_Out\_of\_range | SNVT 164 / The input variable "stValue.ePriority\_level" is outside the permitted range. The value was not sent. |
+| 0x019C | 412 | eLON\_164eAlarm\_type\_Out\_of\_range | SNVT 164 / The input variable "stValue.eAlarm" is outside the permitted range. The value was not sent. |
+| 0x01A4 | 420 | eLON\_byType\_scope\_Out\_of\_range | SNVT 166 / The input variable "stValue.byType\_scope" is outside the permitted range. The value was not sent. |
+| 0x01A5 | 421 | eLON\_uiType\_index\_Out\_of\_range | SNVT 166 / The input variable "stValue.uiType\_index" is outside the permitted range. The value was not sent. |
+| 0x01A6 | 422 | eLON\_eType\_category\_Out\_of\_range | SNVT 166 / The input variable "stValue.eType\_category" is outside the permitted range. The value was not sent. |
+| 0x01A7 | 423 | eLON\_byType\_length\_Out\_of\_range | SNVT 166 / The input variable "stValue.byType" is outside the permitted range. The value was not sent. |
+| 0x01AE | 430 | eLON\_eCmd\_fb\_Out\_of\_range | SNVT 170 / The input variable "stValue.eCmd\_fb" is outside the permitted range. The value was not sent. |
+| 0x01B3 | 435 | eLON\_byManufacturer\_Out\_of\_range | SNVT 172 / The input variable "stValue.byManufacturer" is outside the permitted range. The value was not sent. |
+| 0x01B8 | 440 | eLON\_eDevice\_select\_Out\_of\_range | SNVT 175 / The input variable "stValue.eDevice\_select" is outside the permitted range. The value was not sent. |
+| 0x01BD | 445 | eLON\_stPos\_eFunction\_Out\_of\_range | SNVT 180 / The input variable "stValue.stPos\_eFunction" is outside the permitted range. The value was not sent. |
+| 0x01BE | 446 | eLON\_stPos\_rSetting\_Out\_of\_range | SNVT 180 / The input variable "stValue.stPos.rSetting" is outside the permitted range. The value was not sent. |
+| 0x01BF | 447 | eLON\_stPos\_rRotation\_Out\_of\_range | SNVT 180 / The input variable "stValue.stPos.rRotation" is outside the permitted range. The value was not sent. |
+| 0x01C0 | 448 | eLON\_eCmd\_source\_Out\_of\_range | SNVT 180 / The input variable "stValue.eCmd\_source" is outside the permitted range. The value was not sent. |
+| 0x01C1 | 449 | eLON\_eError\_code\_Out\_of\_range | SNVT 180 / The input variable "stValue.\_eError\_code" is outside the permitted range. The value was not sent. |
+| 0x01C7 | 455 | eLON\_181stAddr\_talk\_eAudio\_sensor\_type\_Out\_of\_range | SNVT 181 / The input variable "stValue.stAddr\_talk.eAudio\_sensor" is outside the permitted range. The value was not sent. |
+| 0x01C8 | 456 | eLON\_181stAddr\_talk\_byCar\_id\_Out\_of\_range | SNVT 181 / The input variable "stValue.stAddr\_talk.byCar\_id" is outside the permitted range. The value was not sent. |
+| 0x01C9 | 457 | eLON\_181stAddr\_talk\_byLocation\_Out\_of\_range | SNVT 181 / The input variable "stValue.stAddr\_talk.byLocation" is outside the permitted range. The value was not sent. |
+| 0x01CA | 458 | eLON\_181stAddr\_talk\_byUnit\_id\_Out\_of\_range | SNVT 181 / The input variable "stValue.stAddr\_talk.byUnit" is outside the permitted range. The value was not sent. |
+| 0x01CB | 459 | eLON\_181stAddr\_init\_eAudio\_sensor\_type\_Out\_of\_range | SNVT 181 / The input variable "stValue.stAddr\_init.eAudio\_sensor\_type" is outside the permitted range. The value was not sent. |
+| 0x01C2 | 450 | eLON\_181stAddr\_init\_byCar\_id\_Out\_of\_range | SNVT 181 / The input variable "stValue.stAddr\_init.byCar" is outside the permitted range. The value was not sent. |
+| 0x01CD | 461 | eLON\_181stAddr\_init\_byLocation\_Out\_of\_range | SNVT 181 / The input variable "stValue.stAddr\_init.byLocation" is outside the permitted range. The value was not sent. |
+| 0x01CE | 462 | eLON\_181stAddr\_init\_byUnit\_id\_Out\_of\_range | SNVT 181 / The input variable "stValue.stAddr\_init.byUnit" is outside the permitted range. The value was not sent. |
+| 0x01CF | 463 | eLON\_181eAudio\_type\_Out\_of\_range | SNVT 181 / The input variable "stValue.eAudio\_type" is outside the permitted range. The value was not sent. |
+| 0x01D0 | 464 | eLON\_181byAudio\_line\_Out\_of\_range | SNVT 181 / The input variable "stValue.byAudio\_line" is outside the permitted range. The value was not sent. |
+| 0x01D1 | 465 | eLON\_181stAddr\_dest\_stP2p\_eAudio\_sensor\_type\_Out\_of\_range | SNVT 181 / The input variable "stValue.stAddr\_dest.stP2p.eAudio\_sensor\_type" is outside the permitted range. The value was not sent. |
+| 0x01D2 | 466 | eLON\_181stAddr\_dest\_stP2p\_byCar\_id\_Out\_of\_range | SNVT 181 / The input variable "stValue.stAddr\_dest.stP2p.byLocation" is outside the permitted range. The value was not sent. |
+| 0x01D3 | 467 | eLON\_181stAddr\_dest\_stP2p\_byLocation\_Out\_of\_range | SNVT 181 / The input variable "stValue." is outside the permitted range. The value was not sent. |
+| 0x01D4 | 468 | eLON\_181stAddr\_dest\_stP2p\_byUnit\_id\_Out\_of\_range | SNVT 181 / The input variable "stValue.stAddr\_dest.stP2p.byUnit\_id" is outside the permitted range. The value was not sent. |
+| 0x01DB | 475 | eLON\_stAddr\_dest\_stP2p\_eAudio\_sensor\_type\_Out\_of\_range | SNVT 182 / The input variable "stValue.stAddr\_dest.stP2p.eAudio\_sensor\_type" is outside the permitted range. The value was not sent. |
+| 0x01DC | 476 | eLON\_stAddr\_dest\_stP2p\_byCar\_id\_Out\_of\_range | SNVT 182 / The input variable "stValue.stAddr\_dest.stP2p.byCar" is outside the permitted range. The value was not sent. |
+| 0x01DD | 477 | eLON\_stAddr\_dest\_stP2p\_byLocation\_Out\_of\_range | SNVT 182 / The input variable "stValue.stAddr\_dest.stP2p.byLocation" is outside the permitted range. The value was not sent. |
+| 0x01DE | 478 | eLON\_stAddr\_dest\_stP2p\_byUnit\_id\_Out\_of\_range | SNVT 182 / The input variable "stValue.stAddr\_init.eAudio\_sensor\_type" is outside the permitted range. The value was not sent. |
+| 0x01DF | 479 | eLON\_stAddr\_init\_eAudio\_sensor\_type\_Out\_of\_range | SNVT 182 / The input variable "stValue.stAddr\_init.byCar\_id" is outside the permitted range. The value was not sent. |
+| 0x01E0 | 480 | eLON\_stAddr\_init\_byCar\_id\_Out\_of\_range | SNVT 182 / The input variable "stValue." is outside the permitted range. The value was not sent. |
+| 0x01E1 | 481 | eLON\_stAddr\_init\_byLocation\_Out\_of\_range | SNVT 182 / The input variable "stValue.stAddr\_init.byLocation" is outside the permitted range. The value was not sent. |
+| 0x01E2 | 482 | eLON\_stAddr\_init\_byUnit\_id\_Out\_of\_range | SNVT 182 / The input variable "stValue.stAddr\_init.byUnit\_id" is outside the permitted range. The value was not sent. |
+| 0x01E3 | 483 | eLON\_eAudio\_type\_Out\_of\_range | SNVT 182 / The input variable "stValue.eAudio\_type" is outside the permitted range. The value was not sent. |
+| 0x01EA | 490 | eLON\_eCycle\_Out\_of\_range | SNVT 184 / The input variable "stValue.eCycle" is outside the permitted range. The value was not sent. |
+| 0x01EB | 491 | eLON\_eSubcycle\_Out\_of\_range | SNVT 184 / The input variable "stValue.eSubcycle" is outside the permitted range. The value was not sent. |
+| 0x01EC | 492 | eLON\_stFunction\_eProgram\_Out\_of\_range | SNVT 184 / The input variable "stValue.stFunction.eProgram" is outside the permitted range. The value was not sent. |
+| 0x01ED | 493 | eLON\_stFunction\_stWash\_eLoad\_level\_Out\_of\_range | SNVT 184 / The input variable "stValue.stFunction.stWash\_eLoad\_level" is outside the permitted range. The value was not sent. |
+| 0x01EE | 494 | eLON\_stFunction\_stWash\_ePrewash\_Out\_of\_range | SNVT 184 / The input variable "stValue.stFunction.stWash.ePrewash" is outside the permitted range. The value was not sent. |
+| 0x01EF | 495 | eLON\_stFunction\_stRinse\_eOption\_Out\_of\_range | SNVT 184 / The input variable "stValue.stFunction.stRinse.eOption" is outside the permitted range. The value was not sent. |
+| 0x01F0 | 496 | eLON\_stFunction\_stRinse\_byRepeat\_Out\_of\_range | SNVT 184 / The input variable "stValue.stFunction.stRinse.byRepeat" is outside the permitted range. The value was not sent. |
+| 0x01F1 | 497 | eLON\_stFunction\_stSpin\_eHold\_Out\_of\_range | SNVT 184 / The input variable "stValue.stFunction.stSpin.eHold" is outside the permitted range. The value was not sent. |
+| 0x01F2 | 498 | eLON\_stFunction\_stDry\_byTemp\_Out\_of\_range | SNVT 184 / The input variable "stValue.stFunction.stDry.byTemp" is outside the permitted range. The value was not sent. |
+| 0x01F3 | 499 | eLON\_stFunction\_stDry\_stDuration\_eDryness\_Out\_of\_range | SNVT 184 / The input variable "stValue.stFunction.stDry.stDuration.eDryness" is outside the permitted range. The value was not sent. |
+| 0x01F9 | 505 | eLON\_186eCycle\_Out\_of\_range | SNVT 186 / The input variable "stValue.eCycle" is outside the permitted range. The value was not sent. |
+| 0x01FA | 506 | eLON\_186eSubcycle\_Out\_of\_range | SNVT 186 / The input variable "stValue.eSubcycle" is outside the permitted range. The value was not sent. |
+| 0x01FB | 507 | eLON\_stWasher\_command\_data\_eCycle\_Out\_of\_range | SNVT 186 / The input variable "stValue.stWasher\_command\_data.eCycle" is outside the permitted range. The value was not sent. |
+| 0x01FC | 508 | eLON\_stWasher\_command\_data\_eSubcycle\_Out\_of\_range | SNVT 186 / The input variable "stValue.stWasher\_command\_data.eSubcycle" is outside the permitted range. The value was not sent. |
+| 0x01FD | 509 | eLON\_stWasher\_command\_data\_stFunction\_eProgram\_Out\_of\_range | SNVT 186 / The input variable "stValue.stWasher\_command\_data.stFunction.eProgram" is outside the permitted range. The value was not sent. |
+| 0x01FE | 510 | eLON\_stWasher\_command\_data\_stFunction\_stWash\_eLoad\_level\_Out\_of\_range | SNVT 186 / The input variable "stValue.stWasher\_command\_data.stFunction.stWash.eLoad" is outside the permitted range. The value was not sent. |
+| 0x01FF | 511 | eLON\_stWasher\_command\_data\_stFunction\_stWash\_ePrewash\_Out\_of\_range | SNVT 186 / The input variable "stValue.stWasher\_command\_data.stFunction.stWash.ePrewash" is outside the permitted range. The value was not sent. |
+| 0x0200 | 512 | eLON\_stWasher\_command\_data\_stFunction\_stRinse\_eOption\_Out\_of\_range | SNVT 186 / The input variable "stValue.stWasher\_command\_data.stFunction.stRinse.eOption" is outside the permitted range. The value was not sent. |
+| 0x0201 | 513 | eLON\_stWasher\_command\_data\_stFunction\_stRinse\_byRepeat\_Out\_of\_range | SNVT 186 / The input variable "stValue.stWasher\_command\_data.stFunction.stRinse.byRepeat" is outside the permitted range. The value was not sent. |
+| 0x0202 | 514 | eLON\_stWasher\_command\_data\_stFunction\_stSpin\_eHold\_Out\_of\_range | SNVT 186 / The input variable "stValue.stWasher\_command\_data.stFunction.stSpin.eHold" is outside the permitted range. The value was not sent. |
+| 0x0203 | 515 | eLON\_stWasher\_command\_data\_stFunction\_stDry\_byTemp\_Out\_of\_range | SNVT 186 / The input variable "stValue.stWasher\_command\_data.stFunction.stDry.byTemp" is outside the permitted range. The value was not sent. |
+| 0x0204 | 516 | eLON\_stWasher\_command\_data\_stFunction\_stDry\_stDuration\_eDryness\_Out\_of\_range | SNVT 186 / The input variable "stValue.stWasher\_command\_data.stFunction.stDry.stDuration.eDryness" is outside the permitted range. The value was not sent. |
+| 0x0206 | 518 | eLON\_eState\_Out\_of\_range | SNVT 189 / The input variable "stValue.eState" is outside the permitted range. The value was not sent. |
+| 0x0207 | 519 | eLON\_stSetting\_rValue\_Out\_of\_range | SNVT 189 / The input variable "stValue.stSettings.rValue" is outside the permitted range. The value was not sent. |
+| 0x0208 | 520 | eLON\_stSetting\_rChange\_Out\_of\_range | SNVT 189 / The input variable "stValue.stSettings.rChange" is outside the permitted range. The value was not sent. |
+| 0x0209 | 521 | eLON\_stSetting\_rMultiplier\_Out\_of\_range | SNVT 189 / The input variable "stValue.stSettings.rMultiplier" is outside the permitted range. The value was not sent. |
+| 0x020A | 522 | eLON\_stSetting\_iAngle\_Out\_of\_range | SNVT 189 / The input variable "stValue.stSettings.iAngle" is outside the permitted range. The value was not sent. |
+| 0x020B | 523 | eLON\_stSetting\_byGroup\_number\_Out\_of\_range | SNVT 189 / The input variable "stValue.stSettings.byGroup\_number" is outside the permitted range. The value was not sent. |
+| 0x020C | 524 | eLON\_stSetting\_siFan\_level\_Out\_of\_range | SNVT 189 / The input variable "stValue.stSettings.siFan\_level" is outside the permitted range. The value was not sent. |
+| 0x020D | 525 | eLON\_stColor\_value\_stCIE1931\_lumen\_rX\_Out\_of\_range | SNVT 190 / The input variable "stValue.stColor\_value.stCIE1931\_lumen.rX" is outside the permitted range. The value was not sent. |
+| 0x020E | 526 | eLON\_stColor\_value\_stCIE1931\_lumen\_rY\_Out\_of\_range | SNVT 190 / The input variable "stValue.stColor\_value.stCIE1931\_lumen.rY" is outside the permitted range. The value was not sent. |
+| 0x020F | 527 | eLON\_stColor\_value\_stCIE1931\_lumen\_udiAbsolute\_Y\_Out\_of\_range | SNVT 190 / The input variable "stValue.stColor\_value.stCIE1931\_lumen.udiAbsolute\_Y" is outside the permitted range. The value was not sent. |
+| 0x0210 | 528 | eLON\_stColor\_value\_stCIE1931\_percent\_rX\_Out\_of\_range | SNVT 190 / The input variable "stValue.stColor\_value.stCIE1931\_percent.rX" is outside the permitted range. The value was not sent. |
+| 0x0211 | 529 | eLON\_stColor\_value\_stCIE1931\_percent\_rY\_Out\_of\_range | SNVT 190 / The input variable "stValue.stColor\_value.stCIE1931\_percent.rY" is outside the permitted range. The value was not sent. |
+| 0x0212 | 530 | eLON\_stColor\_value\_stCIE1931\_percent\_rPercent\_Y\_Out\_of\_range | SNVT 190 / The input variable "stValue.stColor\_value.stCIE1931\_percent.rPercent\_Y" is outside the permitted range. The value was not sent. |
+| 0x0213 | 531 | eLON\_stColor\_value\_uiColor\_temperature\_Out\_of\_range | SNVT 190 / The input variable "stValue.stColor\_value.uiColor\_temperature" is outside the permitted range. The value was not sent. |
+| 0x0217 | 535 | eLON\_191eStatus\_Out\_of\_range | SNVT 191 / The input variable "stValue.Status" is outside the permitted range. The value was not sent. |
+| 0x0218 | 536 | eLON\_uiLog\_number\_Out\_of\_range | SNVT 191 / The input variable "stValue.uiLog\_number" is outside the permitted range. The value was not sent. |
+| 0x0219 | 537 | eLON\_rLevel\_Out\_of\_range | SNVT 191 / The input variable "stValue.rLevel" is outside the permitted range. The value was not sent. |
+| 0x021A | 538 | eLON\_stCurrent\_notify\_time\_rHundredths\_Out\_of\_range | SNVT 191 / The input variable "stValue.stCurrent\_notify\_time.rHundredths" is outside the permitted range. The value was not sent. |
+| 0x021B | 539 | eLON\_stPrevious\_notify\_time\_rHundredths\_Out\_of\_range | SNVT 191 / The input variable "stValue.stPrevious\_notify\_time.rHundredths" is outside the permitted range. The value was not sent. |
+| 0x0221 | 545 | eLON\_rHundredths\_Out\_of\_range | SNVT 192 / The input variable "stValue.rHundredths" is outside the permitted range. The value was not sent. |
+| 0x0226 | 550 | eLON\_stStart\_time\_rHundredths\_Out\_of\_range | SNVT 193 / The input variable "stValue.stStart\_time.rHundredths" is outside the permitted range. The value was not sent. |
+| 0x0227 | 551 | eLON\_stEnd\_time\_rHundredths\_Out\_of\_range | SNVT 193 / The input variable "stValue.stEnd\_time.rHundredths" is outside the permitted range. The value was not sent. |
+| 0x0235 | 565 | eLON\_rComplete\_Out\_of\_range | SNVT 194 / The input variable "stValue.rComplete" is outside the permitted range. The value was not sent. |
+| 0x023A | 570 | eLON\_stTime\_actual\_rHundredths\_Out\_of\_range | SNVT 199 / The input variable "stValue.stTime\_actual.rHundredths" is outside the permitted range. The value was not sent. |
+| 0x023B | 571 | eLON\_stTime\_previous\_rHundredths\_Out\_of\_range | SNVT 199 / The input variable "stValue.stTime\_previous.rHundredths" is outside the permitted range. The value was not sent. |
+| 0x0249 | 585 | eLON\_lrEnergy\_Out\_of\_range | SNVT 200 / The input variable "stValue.lrEnergy" is outside the permitted range. The value was not sent. |
+| 0x024A | 586 | eLON\_rPowerFactor\_Out\_of\_range | SNVT 200 / The input variable "stValue.rPowerFactor" is outside the permitted range. The value was not sent. |
+| 0x024B | 587 | eLON\_rPower\_Out\_of\_range | SNVT 200 / The input variable "stValue.rPower" is outside the permitted range. The value was not sent. |
+| 0x024C | 588 | eLON\_rBallastTemp\_Out\_of\_range | SNVT 200 / The input variable "stValue.rBallastTemp" is outside the permitted range. The value was not sent. |
+| 0x0253 | 595 | eLON\_lrLongitude\_Out\_of\_range | SNVT 201 / The input variable "stValue.lrLongitude" is outside the permitted range. The value was not sent. |
+| 0x0254 | 596 | eLON\_lrLatitude\_Out\_of\_range | SNVT 201 / The input variable "stValue.lrLatitude" is outside the permitted range. The value was not sent. |

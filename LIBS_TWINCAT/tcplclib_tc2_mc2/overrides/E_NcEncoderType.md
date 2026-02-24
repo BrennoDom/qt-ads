@@ -1,0 +1,39 @@
+````markdown
+# E_NcEncoderType
+
+```
+TYPE E_NcEncoderType :
+(
+	NcEncoderType_undefined, 
+	NcEncoderType_Simulation,
+	NcEncoderType_ABS_M3000,
+	NcEncoderType_INC_M31X0,
+	NcEncoderType_INC_KL5101,
+	NcEncoderType_ABS_KL5001_SSI,
+	NcEncoderType_INC_KL5051,
+	NcEncoderType_ABS_KL30XX,
+	NcEncoderType_INC_Sercos_P,
+	NcEncoderType_INC_Sercos_PV,
+	NcEncoderType_INC_Binary,
+	NcEncoderType_ABS_M2510,
+	NcEncoderType_ABS_FOX50,
+	NcEncoderType_HYDRAULIC_FORCE,
+	NcEncoderType_AX2000_B200,
+	NcEncoderType_PROFIDRIVE,
+	NcEncoderType_UNIVERSAL,
+	NcEncoderType_NCBACKPLANE,
+	NcEncoderType_CANOPEN_LENZE,
+	NcEncoderType_CANOPEN_DS402_MDP513_MDP742,
+	NcEncoderType_AX2000_B900, 
+	NcEncoderType_KL5151,
+	NcEncoderType_IP5209,
+	NcEncoderType_KL2531_Stepper,
+	NcEncoderType_KL2532_DC,
+	NcEncoderType_TIMEBASEGENERATOR, 
+	NcEncoderType_INC_TCOM,
+	NcEncoderType_CANOPEN_MDP513_64BIT,
+	NcEncoderType_SPECIFIC
+)DWORD;
+END_TYPE
+```
+````
