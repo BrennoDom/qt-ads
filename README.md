@@ -2,7 +2,11 @@
 
 Standalone Qt GUI project that communicates with Beckhoff ADS.
 
-This repository keeps the GUI code here and includes the Beckhoff ADS library as a Git submodule in `ADS/`.
+Project layout:
+
+- `src/` — the GUI/application source (`.cpp`/`.h`).
+- `include/ADS/` — the Beckhoff ADS library, a Git submodule.
+- `include/twincat_ads/` — TwinCAT ADS headers and the platform library (`linux/`, `win/`).
 
 ## Clone
 
@@ -22,5 +26,5 @@ cmake --build build
 
 ## Notes
 
-- `CMakeLists.txt` builds the `ADS` submodule and links against target `ads`.
+- `CMakeLists.txt` builds the `include/ADS` submodule and links against target `ads`.
 - Qt 6 Widgets is required.

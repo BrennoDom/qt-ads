@@ -15,18 +15,18 @@ set(TWINCAT_ADS_INCLUDE
 
 if(WIN32)
   set(TWINCAT_ADS_LIB
-    ${CMAKE_CURRENT_SOURCE_DIR}/lib/twincat_ads/win/TcAdsDll.lib
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/twincat_ads/win/TcAdsDll.lib
   )
   set(TWINCAT_ADS_DLL
-    ${CMAKE_CURRENT_SOURCE_DIR}/lib/twincat_ads/win/TcAdsDll.dll
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/twincat_ads/win/TcAdsDll.dll
   )
 else()
   set(TWINCAT_ADS_LIB
-    ${CMAKE_CURRENT_SOURCE_DIR}/lib/twincat_ads/linux/libTcAdsDll.so
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/twincat_ads/linux/libTcAdsDll.so
   )
 endif()
 
-add_subdirectory(ADS EXCLUDE_FROM_ALL)
+add_subdirectory(include/ADS EXCLUDE_FROM_ALL)
 
 if(USE_TWINCAT_ROUTER)
   message(STATUS "ADS backend: TwinCAT Router")
@@ -57,23 +57,24 @@ if(USE_TWINCAT_ROUTER)
 
   # Adiciona backend TwinCAT Router
   list(APPEND ADS_SOURCES_PATCHED
-    ${CMAKE_CURRENT_SOURCE_DIR}/ADS/AdsLib/TwinCAT/AdsLib.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ADS/AdsLib/TwinCAT/AdsLib.cpp
   )
 
   set_property(TARGET ads PROPERTY SOURCES ${ADS_SOURCES_PATCHED})
 endif()
 
 add_executable(ads_qt_monitor
-  main.cpp
-  plc_client.cpp
-  plc_monitor_window.cpp
-  bhf_registry.cpp
-  bhf_struct_tree.cpp
-  standard_types.cpp
+  src/main.cpp
+  src/plc_client.cpp
+  src/plc_monitor_window.cpp
+  src/bhf_registry.cpp
+  src/bhf_struct_tree.cpp
+  src/standard_types.cpp
 )
 
 target_include_directories(ads_qt_monitor PRIVATE
-  ${CMAKE_CURRENT_SOURCE_DIR}/ADS/AdsLib
+  ${CMAKE_CURRENT_SOURCE_DIR}/src
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/ADS/AdsLib
   ${TWINCAT_ADS_INCLUDE}
 )
 
@@ -91,7 +92,7 @@ if(UNIX AND NOT APPLE)
   target_link_libraries(ads_qt_monitor PRIVATE pthread)
 
   set_target_properties(ads_qt_monitor PROPERTIES
-    BUILD_RPATH "${CMAKE_CURRENT_SOURCE_DIR}/lib/twincat_ads/linux"
+    BUILD_RPATH "${CMAKE_CURRENT_SOURCE_DIR}/include/twincat_ads/linux"
   )
 endif()
 
