@@ -7,7 +7,7 @@
 #include <unordered_map>
 
 #include "plc_client.h"
-#include "tc2_mc2_monitor.h"
+#include "bhf_struct_tree.h"
 
 class PlcMonitorWindow : public QMainWindow {
   Q_OBJECT
@@ -17,6 +17,7 @@ public:
 
 private slots:
   void refreshValues();
+  void initialLoadTypes();
   void onItemChanged(QTreeWidgetItem* item, int column);
   void onItemDoubleClicked(QTreeWidgetItem* item, int column);
   void onSetRun();
@@ -57,5 +58,5 @@ private:
   int run_reconnect_attempts_;
   std::vector<std::vector<uint8_t>> last_raw_values_;
   std::unordered_map<std::string, int> symbol_index_by_name_;
-  Tc2Mc2Monitor tc2_mc2_monitor_;
+  StructTree struct_tree_;
 };

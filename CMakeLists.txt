@@ -67,8 +67,8 @@ add_executable(ads_qt_monitor
   main.cpp
   plc_client.cpp
   plc_monitor_window.cpp
-  tc2_mc2_types.cpp
-  tc2_mc2_monitor.cpp
+  bhf_registry.cpp
+  bhf_struct_tree.cpp
   standard_types.cpp
 )
 

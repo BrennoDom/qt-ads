@@ -59,6 +59,8 @@ public:
 
   bool isConnected() const { return connected_; }
   const std::string& lastError() const { return last_error_; }
+  long port() const { return port_; }
+  const AmsAddr& ams() const { return ams_; }
 
   const std::vector<SymbolEntry>& symbols() const { return symbols_; }
 

@@ -23,7 +23,7 @@
 #include <cmath>
 namespace {
 constexpr int kInvalidRole = Qt::UserRole + 5;
-constexpr int kStructRole = Tc2Mc2Monitor::kStructRole;
+constexpr int kStructRole = StructTree::kStructRole;
 
 class ValueItemDelegate : public QStyledItemDelegate {
 public:
@@ -130,9 +130,7 @@ PlcMonitorWindow::PlcMonitorWindow(QWidget* parent)
 
   setupTable();
 
-  if (!ensureConnected()) {
-    QMessageBox::critical(this, "ADS", "Falha ao conectar ao ADS.");
-  }
+  ensureConnected();
 
   connect(timer_, &QTimer::timeout, this, &PlcMonitorWindow::refreshValues);
   connect(table_, &QTreeWidget::itemChanged, this, &PlcMonitorWindow::onItemChanged);
@@ -140,7 +138,8 @@ PlcMonitorWindow::PlcMonitorWindow(QWidget* parent)
   connect(run_button_, &QPushButton::clicked, this, &PlcMonitorWindow::onSetRun);
   connect(config_button_, &QPushButton::clicked, this, &PlcMonitorWindow::onSetConfig);
   table_->installEventFilter(this);
-  timer_->start(250);
+
+  QTimer::singleShot(0, this, &PlcMonitorWindow::initialLoadTypes);
 }
 
 void PlcMonitorWindow::setupTable()
@@ -177,6 +176,15 @@ void PlcMonitorWindow::revertInvalidEdit(const QString& message)
   }
 }
 
+void PlcMonitorWindow::initialLoadTypes()
+{
+  ensureConnected();
+  if (struct_tree_.isLoaded()) {
+    refreshValues();
+  }
+  timer_->start(250);
+}
+
 void PlcMonitorWindow::refreshValues()
 {
   if (polling_suspended_) {
@@ -188,6 +196,7 @@ void PlcMonitorWindow::refreshValues()
     fprintf(stderr, "[ADS] %s\n", msg.c_str());
     return;
   }
+  if (!struct_tree_.isLoaded()) return;
 
   std::vector<std::string> values;
   std::vector<std::vector<uint8_t>> raw;
@@ -262,7 +271,7 @@ void PlcMonitorWindow::updateTable(const std::vector<std::string>& values)
     auto* item = value_items_[i];
     std::string display_value = values[i];
     if (i < (int)last_raw_values_.size() && !last_raw_values_[i].empty() && i < (int)syms.size()) {
-      const auto resolved = tc2_mc2_monitor_.resolveTypeName(syms[i].type);
+      const auto resolved = struct_tree_.resolveTypeName(syms[i].type);
       if (!resolved.empty() && resolved != syms[i].type) {
         display_value = client_.formatTypeValue(resolved,
                                                 last_raw_values_[i].data(),
@@ -302,7 +311,7 @@ void PlcMonitorWindow::updateTable(const std::vector<std::string>& values)
     }
 
   }
-  tc2_mc2_monitor_.updateValues(last_raw_values_, client_);
+  struct_tree_.updateValues(last_raw_values_, client_);
   updating_ = false;
 }
 
@@ -317,11 +326,11 @@ bool PlcMonitorWindow::ensureConnected()
       }
       return false;
     }
-    tc2_mc2_monitor_.load("/home/Administrator/ADS/example/qt_gui/LIBS_TWINCAT/tcplclib_tc2_mc2");
+    struct_tree_.loadFromPlc(client_.port(), &client_.ams());
     const auto& syms = client_.symbols();
     std::vector<uint32_t> overrides(syms.size(), 0);
     for (size_t i = 0; i < syms.size(); ++i) {
-      const size_t expected = tc2_mc2_monitor_.typeSize(syms[i].type);
+      const size_t expected = struct_tree_.typeSize(syms[i].type);
       if (expected > syms[i].size) {
         overrides[i] = static_cast<uint32_t>(expected);
       }
@@ -336,7 +345,7 @@ bool PlcMonitorWindow::ensureConnected()
     setupTable();
     value_items_.assign(client_.symbols().size(), nullptr);
     array_children_items_.assign(client_.symbols().size(), {});
-    tc2_mc2_monitor_.clear(client_.symbols().size());
+    struct_tree_.clear(client_.symbols().size());
     symbol_index_by_name_.clear();
 
     std::map<std::string, QTreeWidgetItem*> group_items;
@@ -354,7 +363,7 @@ bool PlcMonitorWindow::ensureConnected()
       if (hasParentSymbol(sym_name)) {
         continue;
       }
-      if (tc2_mc2_monitor_.shouldSkipSymbol(syms, symbol_index_by_name_, i)) {
+      if (struct_tree_.shouldSkipSymbol(syms, symbol_index_by_name_, i)) {
         continue;
       }
 
@@ -384,7 +393,7 @@ bool PlcMonitorWindow::ensureConnected()
       item->setData(0, Qt::UserRole + 4, QString());
 
       const bool symbol_tree = addSymbolChildren(syms, i, item);
-      const bool tc2_tree = tc2_mc2_monitor_.addChildrenForSymbol(syms, symbol_index_by_name_, i, item);
+      const bool tc2_tree = struct_tree_.addChildrenForSymbol(syms, symbol_index_by_name_, i, item);
       if (symbol_tree || tc2_tree) {
         // handled by symbol tree and/or tc2_mc2 monitor
       } else if (syms[i].type.rfind("ARRAY", 0) == 0) {
@@ -579,10 +588,10 @@ bool PlcMonitorWindow::addSymbolChildren(const std::vector<SymbolEntry>& syms,
       }
     }
     if (!has_symbol_children && current->childCount() == 0) {
-      expanded = tc2_mc2_monitor_.addChildrenForSymbol(syms, symbol_index_by_name_, i, current);
+      expanded = struct_tree_.addChildrenForSymbol(syms, symbol_index_by_name_, i, current);
     }
 
-    const auto resolved_type = tc2_mc2_monitor_.resolveTypeName(syms[i].type);
+    const auto resolved_type = struct_tree_.resolveTypeName(syms[i].type);
     if (!expanded && resolved_type.rfind("ARRAY", 0) == 0) {
       long long lower = 0;
       long long upper = -1;
@@ -636,7 +645,7 @@ void PlcMonitorWindow::onItemChanged(QTreeWidgetItem* item, int column)
 {
   if (updating_ || column != 2 || !item) return;
 
-  if (tc2_mc2_monitor_.isStructItem(item)) {
+  if (struct_tree_.isStructItem(item)) {
     const auto type = item->text(1).toStdString();
     const auto result = tc_standard::validateInput(type, item->text(2).toStdString());
     if (!result.ok) {
@@ -662,7 +671,7 @@ void PlcMonitorWindow::onItemChanged(QTreeWidgetItem* item, int column)
     }
 
     std::string error;
-    if (!tc2_mc2_monitor_.handleEdit(item, client_, last_raw_values_, error)) {
+    if (!struct_tree_.handleEdit(item, client_, last_raw_values_, error)) {
       statusBar()->showMessage(QString::fromStdString(error));
       updating_ = true;
       item->setData(2, kInvalidRole, true);
