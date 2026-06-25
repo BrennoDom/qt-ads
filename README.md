@@ -25,6 +25,31 @@ straight to the PLC on selection.
 |---|---|
 | ![Enum dropdown](docs/images/variable_tree_with_combobox_enumerations_and_arrays.png) | ![BOOL dropdown](docs/images/safe_with_variables_and_combobox_bool.png) |
 
+The dropdown options are read from the PLC's own type definitions, so they always
+match the controller's enumerator list exactly:
+
+| In the monitor | In TwinCAT |
+|---|---|
+| ![Monitor enum list](docs/images/qt-gui_with_var_changed_with_combobox.png) | ![TwinCAT enum list](docs/images/Twincat_combobox_enumeration_with_var_unchanged.png) |
+
+### Changes land in the PLC
+
+A value changed in the monitor is written to the controller immediately. Here
+`GVL_PNIE.CommandCode` goes from `eCmd_None` to `eCmd_LoadProgram` in the monitor,
+and the new value shows up live in the TwinCAT watch view.
+
+**1. Before** — TwinCAT shows `eCmd_None`:
+
+![TwinCAT before](docs/images/Twincat_with_var_unchanged.png)
+
+**2. Change in the monitor** — pick `eCmd_LoadProgram` from the dropdown:
+
+![Change in the monitor](docs/images/qt-gui_with_var_changed_with_combobox.png)
+
+**3. After** — TwinCAT now reads `eCmd_LoadProgram`:
+
+![TwinCAT after](docs/images/Twincat_with_var_changed_after_changing_in_qt-gui.png)
+
 ## How it works
 
 When the app starts it:
