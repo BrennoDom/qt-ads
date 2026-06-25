@@ -6,6 +6,14 @@ type tables directly from the controller, and presents every variable — includ
 nested structs, unions, arrays, enums and individual bits — in an editable tree
 that updates in real time.
 
+## Why this exists
+
+On Windows you can watch and force PLC variables live from the TwinCAT **XAE Shell**.
+On **Linux there is no XAE Shell**, so there is no built-in way to monitor variables
+for debugging. This project fills that gap: a native Linux tool that talks to the
+controller over ADS and gives you the same live monitor-and-edit workflow — no
+Windows engineering station required.
+
 ## Screenshots
 
 ### Live variable tree
@@ -88,7 +96,7 @@ reconnects after a state change.
 
 ```bash
 # 1. Clone with the ADS submodule
-git clone <repo-url>
+git clone https://github.com/BrennoDom/qt-ads.git
 cd qt-ads
 git submodule update --init --recursive
 
