@@ -488,11 +488,24 @@ bool PlcMonitorWindow::parseArrayBounds(const std::string& type, long long& lowe
 
 bool PlcMonitorWindow::hasParentSymbol(const std::string& name) const
 {
-  auto pos = name.rfind('.');
-  while (pos != std::string::npos) {
-    const auto parent = name.substr(0, pos);
-    if (symbol_index_by_name_.find(parent) != symbol_index_by_name_.end()) return true;
-    pos = parent.rfind('.');
+  // Walk up the symbol path, stripping one trailing segment at a time. A segment
+  // is either a ".field" member or an "[index]" array element, so that flat
+  // element symbols such as "GVL_JOINT_STATUS[0].Position" are recognised as
+  // children of the array symbol "GVL_JOINT_STATUS" (which we expand ourselves)
+  // and not re-added as duplicate top-level rows.
+  std::string cur = name;
+  while (true) {
+    const auto dot = cur.rfind('.');
+    const auto br = cur.rfind('[');
+    size_t cut = std::string::npos;
+    if (dot != std::string::npos && (br == std::string::npos || dot > br)) {
+      cut = dot;
+    } else if (br != std::string::npos) {
+      cut = br;
+    }
+    if (cut == std::string::npos) break;
+    cur = cur.substr(0, cut);
+    if (symbol_index_by_name_.find(cur) != symbol_index_by_name_.end()) return true;
   }
   return false;
 }
