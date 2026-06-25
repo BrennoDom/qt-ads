@@ -41,6 +41,11 @@ public:
   void updateValues(const std::vector<std::vector<uint8_t>>& raw, PlcClient& client);
   std::string resolveTypeName(const std::string& type) const;
 
+  // If `type` is an enum, read its integer value from `data` and return the
+  // matching constant name in `out`. Returns false for non-enum types.
+  bool formatEnumValue(const std::string& type, const uint8_t* data, size_t size,
+                       std::string& out) const;
+
   bool isStructItem(QTreeWidgetItem* item) const;
 
   bool handleEdit(QTreeWidgetItem* item,

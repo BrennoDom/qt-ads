@@ -18,6 +18,7 @@ public:
 private slots:
   void refreshValues();
   void initialLoadTypes();
+  void deferredLoad();
   void onItemChanged(QTreeWidgetItem* item, int column);
   void onItemDoubleClicked(QTreeWidgetItem* item, int column);
   void onSetRun();

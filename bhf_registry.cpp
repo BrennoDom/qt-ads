@@ -275,6 +275,11 @@ void TypeRegistry::parseFieldEntries(const uint8_t* data, uint32_t size, TypeDef
     memcpy(&fLen, data + pos, 4);
     if (fLen < 40 || pos + fLen > size) break;
 
+    // Per-field header: fieldSize at +8, byteOffset within the parent struct at +12.
+    uint32_t fSize = 0, fOffs = 0;
+    memcpy(&fSize, data + pos + 8, 4);
+    memcpy(&fOffs, data + pos + 12, 4);
+
     // Extract the field name and type as the first two runs of printable ASCII
     // after the binary field header. The header's explicit length fields proved
     // unreliable on real PLC data, so we walk the nul-separated strings directly.
@@ -313,11 +318,67 @@ void TypeRegistry::parseFieldEntries(const uint8_t* data, uint32_t size, TypeDef
       field.array_len = array_len;
       field.hidden = false;
       field.is_bit = (elem_type == "BIT");
+      field.byte_offset = fOffs;
+      field.field_size = fSize;
       def.fields.push_back(field);
     }
 
     pos += fLen;
   }
+}
+
+bool TypeRegistry::parseEnumDef(const uint8_t* data, uint32_t size,
+                                const std::string& enumKey, std::string& baseTypeOut)
+{
+  auto is_ascii = [](uint8_t c) { return c >= 0x20 && c <= 0x7E; };
+
+  // The underlying integer type is the first printable run.
+  uint32_t i = 0;
+  while (i < size && !is_ascii(data[i])) ++i;
+  const uint32_t bs = i;
+  while (i < size && is_ascii(data[i])) ++i;
+  if (i - bs < 2) return false;
+  const std::string baseUp = to_upper_copy(std::string((const char*)(data + bs), i - bs));
+
+  static const char* kInt[] = {"BYTE","WORD","DWORD","LWORD","SINT","USINT",
+                               "INT","UINT","DINT","UDINT","LINT","ULINT"};
+  bool known = false;
+  for (const char* t : kInt) if (baseUp == t) { known = true; break; }
+  if (!known) return false;
+
+  const size_t vw = tc_standard::baseTypeSize(baseUp);
+  if (vw == 0 || vw > 8) return false;
+
+  // An enumerator entry: [len][name (len bytes)]['\0'][value (vw bytes, LE)].
+  auto valid_entry = [&](uint32_t pp) -> bool {
+    if (pp >= size) return false;
+    const uint32_t L = data[pp];
+    if (L < 1 || L > 63) return false;
+    if ((uint64_t)pp + 1 + L + 1 + vw > size) return false;
+    for (uint32_t k = 0; k < L; ++k) if (!is_ascii(data[pp + 1 + k])) return false;
+    return data[pp + 1 + L] == 0;
+  };
+
+  // Skip the fixed metadata block between the base type and the first constant.
+  uint32_t pos = i;
+  while (pos + 2 < size && !valid_entry(pos)) ++pos;
+  if (!valid_entry(pos)) return false;
+
+  auto& vmap = enum_values_[enumKey];
+  int count = 0;
+  while (valid_entry(pos)) {
+    const uint32_t L = data[pos];
+    std::string name((const char*)(data + pos + 1), L);
+    uint64_t raw = 0;
+    for (size_t b = 0; b < vw; ++b) raw |= (uint64_t)data[pos + 1 + L + 1 + b] << (8 * b);
+    if (vw < 8 && (raw & (1ULL << (vw * 8 - 1)))) raw |= ~((1ULL << (vw * 8)) - 1);  // sign-extend
+    vmap[(long long)raw] = name;
+    pos += 1 + L + 1 + (uint32_t)vw;
+    ++count;
+  }
+
+  baseTypeOut = baseUp;
+  return count > 0;
 }
 
 void TypeRegistry::loadFromPlc(long port, const AmsAddr* addr)
@@ -373,17 +434,58 @@ void TypeRegistry::loadFromPlc(long port, const AmsAddr* addr)
       size_t afterName = nameOff + typeName.size() + 1;
       while (afterName < entryLen && p[afterName] == 0) afterName++;
 
-      // Classify by what actually follows the name rather than the memberCount
-      // header field (which is unreliable across TwinCAT versions / type kinds):
-      // if real field entries parse, it is a struct/union; otherwise an alias.
+      // Classify by what actually follows the name (the memberCount header field
+      // is zeroed on real PLCs): an enum has a base-type string + length-prefixed
+      // constants; a struct/union has field entries; otherwise it is an alias.
+      std::string enumBase;
+      bool isEnum = false;
       if (afterName < entryLen) {
-        parseFieldEntries(p + afterName, entryLen - (uint32_t)afterName, def);
+        if (parseEnumDef(p + afterName, entryLen - (uint32_t)afterName,
+                         normalizeTypeName(typeName), enumBase)) {
+          isEnum = true;
+        } else {
+          parseFieldEntries(p + afterName, entryLen - (uint32_t)afterName, def);
+        }
       }
-      if (!def.fields.empty()) {
+      if (isEnum) {
+        // Alias to the underlying integer type: gives the correct size, stops it
+        // expanding as a struct, and leaves the value->name map in enum_values_.
+        def.kind = TypeDef::Kind::Alias;
+        def.alias = enumBase;
+        def.fields.clear();
+      } else if (!def.fields.empty()) {
         def.kind = TypeDef::Kind::Struct;
       } else {
         def.kind = TypeDef::Kind::Alias;
         def.alias = typeName;
+      }
+
+      if (std::getenv("BHF_DEBUG") && !def.fields.empty()) {
+        uint32_t flags = 0, typeSize = 0, memberCount = 0;
+        memcpy(&flags, p + 4, 4);
+        memcpy(&typeSize, p + 8, 4);
+        memcpy(&memberCount, p + 12, 4);
+        fprintf(stderr, "[BHF-hdr] %-28s flags=0x%X typeSize=%u memberCount=%u parsedFields=%zu\n",
+                typeName.c_str(), flags, typeSize, memberCount, def.fields.size());
+      }
+
+      // Raw hex dump of one named type's entry, for reverse-engineering the enum
+      // constant layout. Usage: BHF_HEXTYPE=E_NcEncoderType ./ads_qt_monitor
+      if (const char* want = std::getenv("BHF_HEXTYPE")) {
+        if (typeName == want || normalizeTypeName(typeName) == normalizeTypeName(want)) {
+          const uint32_t n = entryLen < 512 ? entryLen : 512;
+          fprintf(stderr, "[BHF-hex] %s entryLen=%u afterName=%zu\n", typeName.c_str(), entryLen, afterName);
+          for (uint32_t o = 0; o < n; o += 16) {
+            fprintf(stderr, "  %04u:", o);
+            for (uint32_t j = 0; j < 16 && o + j < n; ++j) fprintf(stderr, " %02X", p[o + j]);
+            fprintf(stderr, "  |");
+            for (uint32_t j = 0; j < 16 && o + j < n; ++j) {
+              const uint8_t c = p[o + j];
+              fprintf(stderr, "%c", (c >= 0x20 && c <= 0x7E) ? c : '.');
+            }
+            fprintf(stderr, "|\n");
+          }
+        }
       }
 
       const std::string key = normalizeTypeName(typeName);
@@ -425,13 +527,19 @@ void TypeRegistry::loadFromPlc(long port, const AmsAddr* addr)
       fprintf(stderr, "[BHF] type '%s' kind=%d fields=%zu\n",
               kv.first.c_str(), (int)kv.second.kind, kv.second.fields.size());
       for (const auto& f : kv.second.fields) {
-        fprintf(stderr, "        .%s : %s  x%zu%s%s\n",
+        fprintf(stderr, "        @%-4zu sz=%-3zu .%s : %s  x%zu%s%s\n",
+                f.byte_offset, f.field_size,
                 f.name.c_str(), f.type.c_str(), f.array_len,
                 f.is_bit ? " [bit]" : "", f.hidden ? " [hidden]" : "");
       }
       if (++shown >= 12) { fprintf(stderr, "[BHF] ...(more types omitted)\n"); break; }
     }
   }
+}
+
+bool TypeRegistry::isEnum(const std::string& type) const
+{
+  return enum_values_.find(normalizeTypeName(type)) != enum_values_.end();
 }
 
 bool TypeRegistry::enumValueToString(const std::string& type, long long value, std::string& out) const

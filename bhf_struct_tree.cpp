@@ -852,6 +852,15 @@ void StructTree::updateValues(const std::vector<std::vector<uint8_t>>& raw, PlcC
   maybeFixAxisAdsOffsets(raw);
   for (auto& per_symbol : struct_children_items_) {
     for (auto& child : per_symbol) {
+      if (!child.item) continue;
+      // Skip rows that aren't currently visible (an ancestor is collapsed). This
+      // keeps each poll cheap regardless of how many struct fields exist; the row
+      // refreshes on the next tick once the user expands its parent.
+      bool visible = true;
+      for (QTreeWidgetItem* a = child.item->parent(); a; a = a->parent()) {
+        if (!a->isExpanded()) { visible = false; break; }
+      }
+      if (!visible) continue;
       const int src = child.source_index;
       if (src < 0 || src >= (int)raw.size() || raw[src].empty()) {
         child.item->setText(2, QStringLiteral("N/A"));
@@ -904,6 +913,23 @@ bool StructTree::isStructItem(QTreeWidgetItem* item) const
 std::string StructTree::resolveTypeName(const std::string& type) const
 {
   return registry_.resolveAlias(type);
+}
+
+bool StructTree::formatEnumValue(const std::string& type, const uint8_t* data,
+                                 size_t size, std::string& out) const
+{
+  if (!registry_.isLoaded() || data == nullptr) return false;
+  if (!registry_.isEnum(type)) return false;
+  const size_t tsize = registry_.sizeOfType(type);
+  const size_t n = tsize ? tsize : size;
+  if (n == 0 || n > size || n > 8) return false;
+  long long val = 0;
+  if (n == 1) { int8_t v = 0; memcpy(&v, data, 1); val = v; }
+  else if (n == 2) { int16_t v = 0; memcpy(&v, data, 2); val = v; }
+  else if (n == 4) { int32_t v = 0; memcpy(&v, data, 4); val = v; }
+  else if (n == 8) { int64_t v = 0; memcpy(&v, data, 8); val = v; }
+  else return false;
+  return registry_.enumValueToString(type, val, out);
 }
 
 bool StructTree::handleEdit(QTreeWidgetItem* item,

@@ -3,6 +3,7 @@
 
 #include <QHeaderView>
 #include <QMessageBox>
+#include <QApplication>
 #include <QStatusBar>
 #include <QStringList>
 #include <QEvent>
@@ -130,7 +131,9 @@ PlcMonitorWindow::PlcMonitorWindow(QWidget* parent)
 
   setupTable();
 
-  ensureConnected();
+  // Don't block the constructor on the PLC load — show the window first, then
+  // fetch symbols/types in initialLoadTypes so the UI appears immediately.
+  statusBar()->showMessage("Loading variables from PLC...");
 
   connect(timer_, &QTimer::timeout, this, &PlcMonitorWindow::refreshValues);
   connect(table_, &QTreeWidget::itemChanged, this, &PlcMonitorWindow::onItemChanged);
@@ -178,9 +181,22 @@ void PlcMonitorWindow::revertInvalidEdit(const QString& message)
 
 void PlcMonitorWindow::initialLoadTypes()
 {
+  // Phase 1: just show the message and let the event loop fully paint the window.
+  // The actual (blocking) fetch runs in deferredLoad on the next tick, so the user
+  // sees a rendered window with the message instead of a black, unpainted screen.
+  statusBar()->showMessage("Fetching variables from PLC...");
+  QTimer::singleShot(50, this, &PlcMonitorWindow::deferredLoad);
+}
+
+void PlcMonitorWindow::deferredLoad()
+{
   ensureConnected();
   if (struct_tree_.isLoaded()) {
+    statusBar()->showMessage(
+        QString("Loaded %1 variables").arg(client_.symbols().size()), 4000);
     refreshValues();
+  } else {
+    statusBar()->showMessage("Waiting for PLC connection...");
   }
   timer_->start(250);
 }
@@ -271,11 +287,17 @@ void PlcMonitorWindow::updateTable(const std::vector<std::string>& values)
     auto* item = value_items_[i];
     std::string display_value = values[i];
     if (i < (int)last_raw_values_.size() && !last_raw_values_[i].empty() && i < (int)syms.size()) {
-      const auto resolved = struct_tree_.resolveTypeName(syms[i].type);
-      if (!resolved.empty() && resolved != syms[i].type) {
-        display_value = client_.formatTypeValue(resolved,
-                                                last_raw_values_[i].data(),
-                                                (uint32_t)last_raw_values_[i].size());
+      std::string enum_str;
+      if (struct_tree_.formatEnumValue(syms[i].type, last_raw_values_[i].data(),
+                                       last_raw_values_[i].size(), enum_str)) {
+        display_value = enum_str;
+      } else {
+        const auto resolved = struct_tree_.resolveTypeName(syms[i].type);
+        if (!resolved.empty() && resolved != syms[i].type) {
+          display_value = client_.formatTypeValue(resolved,
+                                                  last_raw_values_[i].data(),
+                                                  (uint32_t)last_raw_values_[i].size());
+        }
       }
     }
     if (item) {
@@ -285,7 +307,8 @@ void PlcMonitorWindow::updateTable(const std::vector<std::string>& values)
       item->setData(0, Qt::UserRole + 4, QString::fromStdString(display_value));
     }
 
-    if (i < (int)array_children_items_.size() && !array_children_items_[i].empty()) {
+    if (i < (int)array_children_items_.size() && !array_children_items_[i].empty()
+        && item && item->isExpanded()) {
       const auto& v = display_value;
       size_t pos = 0;
       size_t child_index = 0;
