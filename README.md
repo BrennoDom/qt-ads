@@ -153,7 +153,7 @@ TCP/IP ADS backend.
 
 Released under the [MIT License](LICENSE).
 
-Copyright © 2026 **Brenno Domingues** — <brennohdomingues@gmail.com> — [@BrennoDom](https://github.com/BrennoDom)
+Author © 2026 **Brenno Domingues** — <brennohdomingues@gmail.com> — [@BrennoDom](https://github.com/BrennoDom)
 
 > The Beckhoff ADS library under `include/ADS/` is a separate project (Git
 > submodule) and keeps its own license.
