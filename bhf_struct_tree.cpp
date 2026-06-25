@@ -971,7 +971,13 @@ bool StructTree::handleEdit(QTreeWidgetItem* item,
   }
 
   const auto resolved_type = registry_.resolveAlias(meta.type);
-  return client.writeByOffset((size_t)meta.source_index, meta.offset, meta.size, resolved_type, item->text(2).toStdString(), error);
+  std::string value = item->text(2).toStdString();
+  // For an enum field the cell holds the state name; write its integer value.
+  long long ev = 0;
+  if (registry_.isEnum(meta.type) && registry_.enumNameToValue(meta.type, value, ev)) {
+    value = std::to_string(ev);
+  }
+  return client.writeByOffset((size_t)meta.source_index, meta.offset, meta.size, resolved_type, value, error);
 }
 
 size_t StructTree::typeSize(const std::string& type) const

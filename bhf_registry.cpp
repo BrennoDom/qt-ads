@@ -3,9 +3,11 @@
 #include "AdsLib.h"
 #include "standard_types.h"
 
+#include <algorithm>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <utility>
 #include <vector>
 
 namespace bhf {
@@ -275,10 +277,10 @@ void TypeRegistry::parseFieldEntries(const uint8_t* data, uint32_t size, TypeDef
     memcpy(&fLen, data + pos, 4);
     if (fLen < 40 || pos + fLen > size) break;
 
-    // Per-field header: fieldSize at +8, byteOffset within the parent struct at +12.
+    // Per-field header: fieldSize at +16, byteOffset within the parent struct at +20.
     uint32_t fSize = 0, fOffs = 0;
-    memcpy(&fSize, data + pos + 8, 4);
-    memcpy(&fOffs, data + pos + 12, 4);
+    memcpy(&fSize, data + pos + 16, 4);
+    memcpy(&fOffs, data + pos + 20, 4);
 
     // Extract the field name and type as the first two runs of printable ASCII
     // after the binary field header. The header's explicit length fields proved
@@ -454,7 +456,21 @@ void TypeRegistry::loadFromPlc(long port, const AmsAddr* addr)
         def.alias = enumBase;
         def.fields.clear();
       } else if (!def.fields.empty()) {
-        def.kind = TypeDef::Kind::Struct;
+        // Detect unions structurally from the PLC-reported field offsets: a
+        // struct's sized members occupy strictly increasing byte offsets, whereas
+        // a union overlays members (a later member's offset is <= an earlier one).
+        // The "U_" naming convention is kept only as a fallback.
+        bool is_union = false;
+        long long prev_off = -1;
+        for (const auto& f : def.fields) {
+          if (f.field_size == 0) continue;  // bit / zero-size members don't count
+          if ((long long)f.byte_offset <= prev_off) { is_union = true; break; }
+          prev_off = (long long)f.byte_offset;
+        }
+        if (!is_union && normalizeTypeName(typeName).rfind("U_", 0) == 0) {
+          is_union = true;
+        }
+        def.kind = is_union ? TypeDef::Kind::Union : TypeDef::Kind::Struct;
       } else {
         def.kind = TypeDef::Kind::Alias;
         def.alias = typeName;
@@ -540,6 +556,29 @@ void TypeRegistry::loadFromPlc(long port, const AmsAddr* addr)
 bool TypeRegistry::isEnum(const std::string& type) const
 {
   return enum_values_.find(normalizeTypeName(type)) != enum_values_.end();
+}
+
+std::vector<std::pair<long long, std::string>>
+TypeRegistry::enumEntries(const std::string& type) const
+{
+  std::vector<std::pair<long long, std::string>> out;
+  auto it = enum_values_.find(normalizeTypeName(type));
+  if (it == enum_values_.end()) return out;
+  for (const auto& kv : it->second) out.emplace_back(kv.first, kv.second);
+  std::sort(out.begin(), out.end(),
+            [](const auto& a, const auto& b) { return a.first < b.first; });
+  return out;
+}
+
+bool TypeRegistry::enumNameToValue(const std::string& type, const std::string& name,
+                                   long long& out) const
+{
+  auto it = enum_values_.find(normalizeTypeName(type));
+  if (it == enum_values_.end()) return false;
+  for (const auto& kv : it->second) {
+    if (kv.second == name) { out = kv.first; return true; }
+  }
+  return false;
 }
 
 bool TypeRegistry::enumValueToString(const std::string& type, long long value, std::string& out) const

@@ -35,6 +35,9 @@ public:
   size_t alignmentOfType(const std::string& name, int depth = 0) const;
   bool enumValueToString(const std::string& type, long long value, std::string& out) const;
   bool isEnum(const std::string& type) const;
+  // Enum constants sorted by value, for populating a selector.
+  std::vector<std::pair<long long, std::string>> enumEntries(const std::string& type) const;
+  bool enumNameToValue(const std::string& type, const std::string& name, long long& out) const;
   size_t fieldOffset(const std::string& typeName, const std::string& fieldName) const;
   bool isLoaded() const { return loaded_; }
 

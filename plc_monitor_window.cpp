@@ -7,10 +7,12 @@
 #include <QStatusBar>
 #include <QStringList>
 #include <QEvent>
+#include <QEventLoop>
 #include <QKeyEvent>
 #include <QColor>
 #include <QTimer>
 #include <QLineEdit>
+#include <QComboBox>
 #include <QPalette>
 #include <QStyledItemDelegate>
 #include <QPainter>
@@ -28,11 +30,36 @@ constexpr int kStructRole = StructTree::kStructRole;
 
 class ValueItemDelegate : public QStyledItemDelegate {
 public:
-  explicit ValueItemDelegate(QObject* parent = nullptr) : QStyledItemDelegate(parent) {}
+  explicit ValueItemDelegate(const StructTree* tree, QObject* parent = nullptr)
+    : QStyledItemDelegate(parent), tree_(tree) {}
 
   QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option,
                         const QModelIndex& index) const override
   {
+    // Enum, BOOL and BIT cells get a dropdown of their valid values instead of a
+    // free text field.
+    const std::string type = index.sibling(index.row(), 1).data().toString().toStdString();
+    QStringList options;
+    if (tree_ && tree_->isEnum(type)) {
+      for (const auto& e : tree_->enumEntries(type)) {
+        options << QString::fromStdString(e.second);
+      }
+    } else if (type == "BOOL" || type == "BIT") {
+      options << "FALSE" << "TRUE";
+    }
+    if (!options.isEmpty()) {
+      auto* combo = new QComboBox(parent);
+      combo->addItems(options);
+      // Commit and close as soon as the user picks a value.
+      auto* self = const_cast<ValueItemDelegate*>(this);
+      connect(combo, QOverload<int>::of(&QComboBox::activated), self,
+              [self, combo](int) {
+                emit self->commitData(combo);
+                emit self->closeEditor(combo);
+              });
+      return combo;
+    }
+
     auto* editor = QStyledItemDelegate::createEditor(parent, option, index);
     auto* line = qobject_cast<QLineEdit*>(editor);
     if (line) {
@@ -46,11 +73,26 @@ public:
 
   void setEditorData(QWidget* editor, const QModelIndex& index) const override
   {
+    if (auto* combo = qobject_cast<QComboBox*>(editor)) {
+      const int i = combo->findText(index.data(Qt::EditRole).toString());
+      if (i >= 0) combo->setCurrentIndex(i);
+      return;
+    }
     QStyledItemDelegate::setEditorData(editor, index);
     auto* line = qobject_cast<QLineEdit*>(editor);
     if (line) {
       applyEditorPalette(line, index.data(kInvalidRole).toBool());
     }
+  }
+
+  void setModelData(QWidget* editor, QAbstractItemModel* model,
+                    const QModelIndex& index) const override
+  {
+    if (auto* combo = qobject_cast<QComboBox*>(editor)) {
+      model->setData(index, combo->currentText(), Qt::EditRole);
+      return;
+    }
+    QStyledItemDelegate::setModelData(editor, model, index);
   }
 
   void updateEditorGeometry(QWidget* editor, const QStyleOptionViewItem& option,
@@ -72,6 +114,8 @@ public:
   }
 
 private:
+  const StructTree* tree_ = nullptr;
+
   static void applyEditorPalette(QLineEdit* line, bool invalid)
   {
     if (!line) return;
@@ -158,7 +202,7 @@ void PlcMonitorWindow::setupTable()
   table_->setExpandsOnDoubleClick(true);
   table_->setEditTriggers(QAbstractItemView::DoubleClicked | QAbstractItemView::EditKeyPressed);
   table_->setSelectionMode(QAbstractItemView::NoSelection);
-  table_->setItemDelegateForColumn(2, new ValueItemDelegate(table_));
+  table_->setItemDelegateForColumn(2, new ValueItemDelegate(&struct_tree_, table_));
   table_->viewport()->installEventFilter(this);
 }
 
@@ -381,7 +425,22 @@ bool PlcMonitorWindow::ensureConnected()
       return s.size() >= suffix.size() && s.compare(s.size() - suffix.size(), suffix.size(), suffix) == 0;
     };
 
+    // Display name without the group prefix: "SAFE.bAck" -> "bAck". The full
+    // symbol name is kept everywhere else (lookups, writes, child binding).
+    auto strip_group = [](const std::string& n) {
+      const auto d = n.find('.');
+      return d == std::string::npos ? n : n.substr(d + 1);
+    };
+
     for (int i = 0; i < (int)syms.size(); ++i) {
+      // Keep the event loop alive during the (potentially multi-second) tree build
+      // so the window manager doesn't flag the app as "not responding". User input
+      // is excluded to avoid re-entering this code mid-build.
+      if ((i & 63) == 0) {
+        statusBar()->showMessage(
+            QString("Loading variables... %1/%2").arg(i).arg((int)syms.size()));
+        qApp->processEvents(QEventLoop::ExcludeUserInputEvents);
+      }
       const auto& sym_name = syms[i].name;
       if (hasParentSymbol(sym_name)) {
         continue;
@@ -403,7 +462,7 @@ bool PlcMonitorWindow::ensureConnected()
       }
 
       auto* item = new QTreeWidgetItem(group_item);
-      item->setText(0, QString::fromStdString(syms[i].name));
+      item->setText(0, QString::fromStdString(strip_group(syms[i].name)));
       item->setText(1, QString::fromStdString(syms[i].type));
       item->setText(2, QStringLiteral(""));
       item->setText(3, QString::number(syms[i].size));
@@ -432,7 +491,7 @@ bool PlcMonitorWindow::ensureConnected()
           array_children_items_[i].reserve(count);
           for (size_t idx = 0; idx < count; ++idx) {
             auto* child = new QTreeWidgetItem(item);
-            const auto element_name = syms[i].name + "[" + std::to_string(lower + (long long)idx) + "]";
+            const auto element_name = strip_group(syms[i].name) + "[" + std::to_string(lower + (long long)idx) + "]";
             child->setText(0, QString::fromStdString(element_name));
             child->setText(1, QString::fromStdString(elem_type));
             child->setText(2, QStringLiteral(""));
@@ -445,16 +504,13 @@ bool PlcMonitorWindow::ensureConnected()
             child->setData(0, Qt::UserRole + 3, true);
             child->setData(0, Qt::UserRole + 4, QString());
             child->setFlags(child->flags() | Qt::ItemIsEditable);
-            if (elem_type == "BOOL") {
-              child->setFlags(child->flags() & ~Qt::ItemIsEditable);
-            }
           }
           item->setExpanded(false);
           item->setFlags(item->flags() & ~Qt::ItemIsEditable);
         }
       } else {
         item->setFlags(item->flags() | Qt::ItemIsEditable);
-        if (syms[i].type == "BOOL" || syms[i].type == "AXIS_REF") {
+        if (syms[i].type == "AXIS_REF") {
           item->setFlags(item->flags() & ~Qt::ItemIsEditable);
         }
       }
@@ -653,15 +709,12 @@ bool PlcMonitorWindow::addSymbolChildren(const std::vector<SymbolEntry>& syms,
           elem->setData(0, Qt::UserRole + 3, true);
           elem->setData(0, Qt::UserRole + 4, QString());
           elem->setFlags(elem->flags() | Qt::ItemIsEditable);
-          if (elem_type == "BOOL") {
-            elem->setFlags(elem->flags() & ~Qt::ItemIsEditable);
-          }
         }
         current->setExpanded(false);
         current->setFlags(current->flags() & ~Qt::ItemIsEditable);
       }
     } else if (!expanded) {
-      if (syms[i].type == "BOOL" || syms[i].type == "AXIS_REF") {
+      if (syms[i].type == "AXIS_REF") {
         current->setFlags(current->flags() & ~Qt::ItemIsEditable);
       } else {
         current->setFlags(current->flags() | Qt::ItemIsEditable);
@@ -683,27 +736,32 @@ void PlcMonitorWindow::onItemChanged(QTreeWidgetItem* item, int column)
 
   if (struct_tree_.isStructItem(item)) {
     const auto type = item->text(1).toStdString();
-    const auto result = tc_standard::validateInput(type, item->text(2).toStdString());
-    if (!result.ok) {
-      statusBar()->showMessage(QString::fromStdString(result.error));
-      updating_ = true;
-      item->setData(2, kInvalidRole, true);
-      item->setToolTip(2, QString::fromStdString(result.error));
-      pending_invalid_item_ = item;
-      pending_invalid_prev_value_ = item->data(0, Qt::UserRole + 4).toString();
-      table_->setCurrentItem(item, 2);
-      QTimer::singleShot(0, this, [this, item]() {
-        if (item) {
-          table_->openPersistentEditor(item, 2);
-          table_->setFocus();
-          applyEditorErrorStyle(table_, true);
-          if (auto* editor = table_->findChild<QLineEdit*>()) {
-            editor->installEventFilter(this);
+    // Enum/BOOL/BIT cells are edited via a dropdown, so the value is always valid
+    // — skip the numeric validation used for plain fields.
+    const bool combo_cell = struct_tree_.isEnum(type) || type == "BOOL" || type == "BIT";
+    if (!combo_cell) {
+      const auto result = tc_standard::validateInput(type, item->text(2).toStdString());
+      if (!result.ok) {
+        statusBar()->showMessage(QString::fromStdString(result.error));
+        updating_ = true;
+        item->setData(2, kInvalidRole, true);
+        item->setToolTip(2, QString::fromStdString(result.error));
+        pending_invalid_item_ = item;
+        pending_invalid_prev_value_ = item->data(0, Qt::UserRole + 4).toString();
+        table_->setCurrentItem(item, 2);
+        QTimer::singleShot(0, this, [this, item]() {
+          if (item) {
+            table_->openPersistentEditor(item, 2);
+            table_->setFocus();
+            applyEditorErrorStyle(table_, true);
+            if (auto* editor = table_->findChild<QLineEdit*>()) {
+              editor->installEventFilter(this);
+            }
           }
-        }
-      });
-      updating_ = false;
-      return;
+        });
+        updating_ = false;
+        return;
+      }
     }
 
     std::string error;
@@ -747,6 +805,7 @@ void PlcMonitorWindow::onItemChanged(QTreeWidgetItem* item, int column)
     return;
   }
 
+  if (!struct_tree_.isEnum(type) && type != "BOOL" && type != "BIT") {
   const auto result = tc_standard::validateInput(type, item->text(2).toStdString());
   if (!result.ok) {
     statusBar()->showMessage(QString::fromStdString(result.error));
@@ -769,17 +828,37 @@ void PlcMonitorWindow::onItemChanged(QTreeWidgetItem* item, int column)
     updating_ = false;
     return;
   }
+  }  // end of non-enum validation guard
+
   const auto element_offset = item->data(0, Qt::UserRole + 1).toLongLong();
   const auto is_array_elem = item->data(0, Qt::UserRole + 3).toBool();
 
   std::string error;
-  if (!client_.writeValue(
+  bool write_ok;
+  if (struct_tree_.isEnum(type)) {
+    // The cell holds the selected state name; write its integer value as the
+    // underlying base type.
+    long long ev = 0;
+    if (!struct_tree_.enumNameToValue(type, item->text(2).toStdString(), ev)) {
+      write_ok = false;
+      error = "Unknown enum value";
+    } else {
+      const auto base = struct_tree_.resolveTypeName(type);
+      const size_t bsz = struct_tree_.typeSize(type);
+      const size_t byte_off = is_array_elem ? (size_t)(element_offset * (long long)bsz) : 0u;
+      write_ok = client_.writeByOffset(static_cast<size_t>(sym_index), byte_off, bsz,
+                                       base, std::to_string(ev), error);
+    }
+  } else {
+    write_ok = client_.writeValue(
         static_cast<size_t>(sym_index),
         item->text(2).toStdString(),
         error,
         is_array_elem,
         element_offset,
-        type)) {
+        type);
+  }
+  if (!write_ok) {
     statusBar()->showMessage(QString::fromStdString(error));
     updating_ = true;
     item->setData(2, kInvalidRole, true);
@@ -813,24 +892,10 @@ void PlcMonitorWindow::onItemChanged(QTreeWidgetItem* item, int column)
 
 void PlcMonitorWindow::onItemDoubleClicked(QTreeWidgetItem* item, int column)
 {
-  if (!item || column != 2) return;
-
-  const auto type = item->data(0, Qt::UserRole + 2).toString().toStdString();
-  if (type != "BOOL") return;
-
-  const auto current = item->text(2).trimmed().toUpper();
-  const QString toggled = (current == "TRUE" || current == "1") ? "FALSE" : "TRUE";
-
-  pending_bool_item_ = item;
-  pending_bool_prev_value_ = item->text(2);
-
-  updating_ = true;
-  item->setText(2, toggled);
-  item->setBackground(2, QBrush(QColor(255, 235, 130)));
-  item->setToolTip(2, "Pressione Enter para confirmar, Esc para cancelar");
-  updating_ = false;
-
-  statusBar()->showMessage("Pressione Enter para confirmar, Esc para cancelar");
+  // BOOL/BIT (and enum) cells are now edited via the value dropdown provided by
+  // the item delegate, so the old double-click toggle is no longer used.
+  Q_UNUSED(item);
+  Q_UNUSED(column);
 }
 
 bool PlcMonitorWindow::eventFilter(QObject* obj, QEvent* event)
@@ -922,17 +987,11 @@ bool PlcMonitorWindow::eventFilter(QObject* obj, QEvent* event)
 
 std::string PlcMonitorWindow::groupForSymbol(const std::string& name) const
 {
-  if (name.rfind("MAIN.", 0) == 0) {
-    return "MAIN";
+  // Group by the first path segment: "MAIN.axis" -> "MAIN", "SAFE.bReset" -> "SAFE".
+  // Names without a leading segment fall into "Other".
+  const auto dot = name.find('.');
+  if (dot == std::string::npos || dot == 0) {
+    return "Other";
   }
-  if (name.find("GlobalVersion") != std::string::npos ||
-      name.find("Global_Version") != std::string::npos) {
-    return "GlobalVersion";
-  }
-  if (name.rfind("TwinCAT.", 0) == 0 ||
-      name.rfind("System.", 0) == 0 ||
-      name.rfind("Tc2_", 0) == 0) {
-    return "TwinCAT";
-  }
-  return "Other";
+  return name.substr(0, dot);
 }

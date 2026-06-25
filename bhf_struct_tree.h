@@ -46,6 +46,14 @@ public:
   bool formatEnumValue(const std::string& type, const uint8_t* data, size_t size,
                        std::string& out) const;
 
+  bool isEnum(const std::string& type) const { return registry_.isEnum(type); }
+  std::vector<std::pair<long long, std::string>> enumEntries(const std::string& type) const {
+    return registry_.enumEntries(type);
+  }
+  bool enumNameToValue(const std::string& type, const std::string& name, long long& out) const {
+    return registry_.enumNameToValue(type, name, out);
+  }
+
   bool isStructItem(QTreeWidgetItem* item) const;
 
   bool handleEdit(QTreeWidgetItem* item,
