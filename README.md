@@ -24,10 +24,14 @@ the group prefix, and values refresh in real time.
 
 ![Variable tree](docs/images/variable_tree.png)
 
-### Editing — dropdowns for enums, BOOL and BIT
+### Editing values
 
-Enum, BOOL and BIT values are edited from a dropdown of their valid states, written
-straight to the PLC on selection.
+Any writable variable can be edited and is written straight to the PLC:
+
+- **Numeric and text types** — `REAL`, `LREAL`, `INT`, `DINT`, `UINT`, `WORD`,
+  `DWORD`, `BYTE`, `STRING`, etc. — are edited by typing a new value. The input is
+  validated against the type before it is sent.
+- **Enum, BOOL and BIT** values are picked from a dropdown of their valid states.
 
 | Enum states | BOOL |
 |---|---|
