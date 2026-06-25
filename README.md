@@ -148,3 +148,12 @@ CMakeLists.txt
 The CMake option `USE_TWINCAT_ROUTER` (ON by default) builds the app against a
 locally installed TwinCAT router; turning it OFF uses the submodule's standalone
 TCP/IP ADS backend.
+
+## License
+
+Released under the [MIT License](LICENSE).
+
+Copyright © 2026 **Brenno Domingues** — <brennohdomingues@gmail.com> — [@BrennoDom](https://github.com/BrennoDom)
+
+> The Beckhoff ADS library under `include/ADS/` is a separate project (Git
+> submodule) and keeps its own license.
